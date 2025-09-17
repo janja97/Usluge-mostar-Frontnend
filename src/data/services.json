@@ -1,0 +1,116 @@
+[
+  {
+    "category": "ciscenje",
+    "subcategories": [
+      "dvorista",
+      "kuce",
+      "stana",
+      "apartmana",
+      "auta",
+      "prozora",
+      "tepih",
+      "namjestaja",
+      "garaza",
+      "poslovnog_prostora"
+    ]
+  },
+  {
+    "category": "odrzavanje",
+    "subcategories": [
+      "elektricar",
+      "vodoinstalater",
+      "fasader",
+      "krovopokrivac",
+      "bravar",
+      "moler",
+      "stolar",
+      "klima_servis",
+      "popravka_uredaja"
+    ]
+  },
+  {
+    "category": "briga_i_pomoc",
+    "subcategories": [
+      "cuvanje_djece",
+      "cuvanje_starih_ljudi",
+      "njege_starih_i_nepokretnih_osoba",
+      "pomoc_u_kuci",
+      "prva_pomoc",
+      "setnje_psa",
+      "hrana_i_njega_kuce",
+      "kupovina_za_starije_osobe"
+    ]
+  },
+  {
+    "category": "instrukcije",
+    "subcategories": [
+      "matematika_osnovna",
+      "matematika_srednja",
+      "fizika_osnovna",
+      "fizika_srednja",
+      "hemija_osnovna",
+      "hemija_srednja",
+      "biologija_osnovna",
+      "biologija_srednja",
+      "istorija",
+      "geografija",
+      "jezici_strani",
+      "jezici_maternji",
+      "muzika",
+      "programiranje",
+      "informatika",
+      "likovna_umjetnost",
+      "sport"
+    ]
+  },
+  {
+    "category": "zabava_i_rekreacija",
+    "subcategories": [
+      "organizacija_proslava",
+      "plesni_casovi",
+      "yoga_i_fitness",
+      "sportski_trening",
+      "kampiranje",
+      "planinarenje",
+      "biciklizam",
+      "putovanja"
+    ]
+  },
+  {
+    "category": "transport_i_dostava",
+    "subcategories": [
+      "vozac",
+      "kurir",
+      "dostava_robe",
+      "selidbe",
+      "prijevoz_vozilom"
+    ]
+  },
+  {
+    "category": "it_i_tehnologija",
+    "subcategories": [
+      "popravka_racunara",
+      "instalacija_softvera",
+      "web_dizajn",
+      "programiranje",
+      "odrzavanje_mreze",
+      "savjetovanje_it"
+    ]
+  },
+  {
+    "category": "kreativne_usluge",
+    "subcategories": [
+      "fotografija",
+      "video_snimaanje",
+      "graficki_dizajn",
+      "pisanje_tekstova",
+      "prevodjenje",
+      "crtanje_ilustracije",
+      "izrada_suvenira"
+    ]
+  },
+  {
+    "category": "ostalo",
+    "subcategories": []
+  }
+]

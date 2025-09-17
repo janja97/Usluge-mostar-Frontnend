@@ -54,7 +54,7 @@ const login = async () => {
     localStorage.setItem('token', res.data.token)
 
     // Redirect to profile page after successful login
-    router.push('/profile')
+    router.push('/')
   } catch (e) {
     // Catch error and show message from backend or fallback
     error.value = e.response?.data?.message || 'Login failed'

@@ -1,0 +1,93 @@
+.about-me {
+  /* background-color: rgb(245, 245, 245);
+  border-radius: 20px; */
+}
+
+/* review badge */
+.review {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  background: rgb(91, 119, 168);
+  color: #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff; /* bijeli obrub da se odvoji od slike */
+}
+
+
+.profile-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 1px solid rgb(91, 119, 168);
+  object-fit: cover;
+  padding: 5px;
+  display: block;
+}
+
+/* settings dugme */
+.settings-btn {
+  position: absolute;
+  top: 20px;
+  right: 20%;               /* postavi prema centru */
+  transform: translate(50%, -50%); /* gurni na gornji desni border */
+  background: rgb(91, 119, 168);         /* da se odvoji od slike */
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(245, 245, 245);
+  cursor: pointer;
+}
+
+/* dashboar */
+.active-services {
+  background-color: rgb(192, 108, 108);
+  color: white;
+  font-size: 20px;
+  border: 1px solid rgb(192, 108, 108);
+  border-radius: 10px;
+}
+.finish-services {
+  background-color:rgb(91, 119, 168);
+  color: white;
+  font-size: 20px;
+  border: 1px solid rgb(91, 119, 168);
+  border-radius: 10px;
+}
+@media (max-width: 576px) {
+  .active-services,
+  .finish-services {
+    font-size: 16px;
+  }
+}
+
+/* profile services */
+.services {
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
+}
+
+.service {
+  border-bottom: 1px solid black;
+}
+
+.add-service{
+  background: rgb(91, 119, 168);
+  color: white;
+  border: 1px solid rgb(91, 119, 168);
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+.filters {
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
+}

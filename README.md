@@ -8,19 +8,20 @@
 ---
 
 ## 🌟 About the Project  
-This is a **full-stack web application** built to showcase my skills as a developer.  
-The idea: a platform where people in **Mostar** (and later other cities) can **offer or search for services** – from small tasks and freelance jobs to professional services.  
+**Usluge Mostar** is a **full-stack web application** built to demonstrate my skills as a developer.  
 
-The project is also part of my **portfolio** to demonstrate coding quality, structure, and the ability to deliver complete solutions.  
+The idea: a platform where people in **Mostar** (and later other cities) can **offer or search for services** – from simple tasks and freelance work to professional services.  
+
+This project is also part of my **portfolio** to show clean code, structure, and complete full-stack delivery.  
 
 ---
 
 ## ✨ Demo Preview  
-📸 *Screenshots will be added here once the UI pages are polished.*  
+📸 *Screenshots will be added once the UI pages are polished.*  
 
-- **Login Page** – User authentication with JWT  
-- **Register Page** – Create an account and join the platform  
-- **Future Pages** – Service listing, profile management, messaging system  
+- **Login Page** – Secure authentication with JWT  
+- **Register Page** – New user account creation  
+- **Upcoming Pages** – Service listing, filters, user profiles, messaging system  
 
 ---
 
@@ -28,26 +29,30 @@ The project is also part of my **portfolio** to demonstrate coding quality, stru
 
 ### 🔐 Backend (Node.js + Express)  
 - API server with Express  
-- MongoDB connection with Mongoose  
+- MongoDB connection via Mongoose  
 - **User authentication** (Register/Login with JWT)  
-- Password encryption with bcrypt  
-- `.env` configuration for sensitive data  
+- Password hashing with bcrypt  
+- `.env` support for secrets (JWT, MongoDB URI, PORT)  
 
-### 🎨 Frontend (Vue.js 3 + Tailwind)  
+### 🎨 Frontend (Vue.js 3 + TailwindCSS)  
 - Vue Router setup for navigation  
-- **Login Page** – with error handling & JWT storage in `localStorage`  
-- **Register Page** – basic structure ready  
-- Axios HTTP client integrated  
-- Tailwind CSS configured (light mode forced by default)  
+- **Login Page** – error handling + JWT storage in `localStorage`  
+- **Register Page** – ready with form validation  
+- Axios integrated for API communication  
+- TailwindCSS fully configured (light mode by default)  
+- **Service Filters** with `vue-slider-component` for price range (min/max slider)  
 
 ---
 
 ## 🎯 Next Steps  
-- Build **profile page** (update/view user info)  
-- Add functionality for **creating & browsing services**  
+- Profile page (view/update user info)  
+- Create, update & browse services  
 - Role-based features (providers vs. seekers)  
-- Improve UI with Tailwind & animations  
-- Deploy project (Netlify + Render/Heroku)  
+- Improved UI (Tailwind components, animations, responsiveness)  
+- Messaging system between users  
+- Deployment:  
+  - Frontend → Netlify  
+  - Backend → Render / Railway / Heroku  
 
 ---
 
@@ -57,7 +62,8 @@ The project is also part of my **portfolio** to demonstrate coding quality, stru
 - Vue.js 3 (Composition API)  
 - Vue Router  
 - Axios  
-- Tailwind CSS  
+- TailwindCSS  
+- Vue-Slider-Component  
 
 **Backend**  
 - Node.js + Express.js  
@@ -69,6 +75,7 @@ The project is also part of my **portfolio** to demonstrate coding quality, stru
 ---
 
 ## 📂 Project Structure  
+
 
 usluge-mostar/
 │

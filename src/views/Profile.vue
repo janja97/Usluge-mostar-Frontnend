@@ -1,43 +1,27 @@
 <template>
-  <div>
-    <h2>Profile</h2>
-    <div v-if="user">
-      <p><strong>{{ user.fullName }}</strong></p>
-      <p>{{ user.email }}</p>
-      <p>{{ user.phone }}</p>
-      <p>{{ user.city }}</p>
-      <button @click="logout">Logout</button>
+  <div class="container pt-5">
+    <div class="d-flex flex-wrap">
+      <!-- Lijevi dio: Header -->
+      <ProfileHeader :user="user" :services="services" class="col-md-4 col-12" />
+
+      <!-- Desni dio: ServicesList -->
+      <ServicesList class="col-md-8 col-12 p-3" />
     </div>
-    <p v-else>Loading...</p>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+<script setup>
+import { ref, onMounted } from "vue";
+import { useUserStore } from "../store/user";
+import ProfileHeader from "../components/Profile/Header.vue";
+import ServicesList from "../components/Profile/MyProfile/ServicesList.vue";
 
-export default {
-  setup(){
-    const user = ref(null);
-    const router = useRouter();
+const userStore = useUserStore();
+const user = ref(null);
+const services = ref([]);
 
-    const loadMe = async () => {
-      try {
-        const res = await axios.get('/auth/me');
-        user.value = res.data.user;
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    const logout = () => {
-      localStorage.removeItem('token');
-      router.push('/login');
-    };
-
-    onMounted(loadMe);
-    return { user, logout };
-  }
-}
+onMounted(async () => {
+  await userStore.fetchUser();
+  user.value = userStore.$state.user;
+});
 </script>
