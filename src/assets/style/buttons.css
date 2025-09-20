@@ -1,0 +1,81 @@
+a.btn,
+button.btn {
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+/* PRIMARY gumb (register) */
+a.primary,
+button.primary {
+   background-color: var(--color-blue);
+  color: var(--color-text-light);
+  border: none;
+}
+a.primary:hover,
+button.primary:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* SECONDARY gumb (login) */
+a.primary, button.primary {
+  background-color: var(--color-blue);
+  color: var(--color-text-light);
+}
+
+a.primary:hover, button.primary:hover {
+  background-color: var(--color-blue-hover);
+}
+
+a.secondary, button.secondary {
+  background-color: var(--color-light-blue);
+  color: var(--color-text-dark);
+}
+
+a.secondary:hover, button.secondary:hover {
+  background-color: var(--color-light-blue-hover);
+}
+
+a.danger, button.danger {
+  background-color: var(--color-orange);
+  color: var(--color-text-light);
+}
+
+a.danger:hover, button.danger:hover {
+  background-color: var(--color-orange-hover);
+}
+
+
+/* TEXT-ARROW gumb */
+a.text-arrow,
+button.text-arrow {
+  background: transparent;
+  border: none;
+  color: #282828;
+  padding: 0;
+  font-weight: 500;
+}
+a.text-arrow:hover,
+button.text-arrow:hover {
+  text-decoration: underline;
+}
+
+a.text-arrow::after,
+button.text-arrow::after {
+  content: '→';
+  margin-left: 0.25rem;
+  transition: transform 0.3s ease;
+}
+a.text-arrow:hover::after,
+button.text-arrow:hover::after {
+  transform: translateX(3px);
+}

@@ -2,7 +2,8 @@
   <div>
     <Navbar :user="user" @logout="handleLogout" />
     <router-view :user="user" @update-user="updateUser" />
-    <p>app stranica: {{ user ? user.fullName : 'Nema usera' }}</p>
+    <!-- <p>app stranica: {{ user ? user.fullName : 'Nema usera' }}</p> -->
+    <Footer />
   </div>
 </template>
 
@@ -10,6 +11,8 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Navbar from './components/Navbar.vue';
+import Footer from './components/Footer.vue';
+
 
 const user = ref(null);
 
@@ -41,13 +44,11 @@ const loadUser = async () => {
 
 onMounted(loadUser);
 
-// kada user logouta
 function handleLogout() {
   localStorage.removeItem('token');
   user.value = null;
 }
 
-// kada child komponenta (Profile) dohvaća usera
 function updateUser(newUser) {
   user.value = newUser;
 }

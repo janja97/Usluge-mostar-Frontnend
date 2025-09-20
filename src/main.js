@@ -2,12 +2,17 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import axios from 'axios';
-import './style.css'
-import './assets/style/profile.css'
+
+// css
+import './assets/style/variables.css'
+import './style.css';
+import './assets/style/profile.css';
+import './assets/style/buttons.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // ako želiš JS komponente
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import { createPinia } from 'pinia';
 
 

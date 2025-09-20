@@ -2,6 +2,9 @@
   /* background-color: rgb(245, 245, 245);
   border-radius: 20px; */
 }
+.body { 
+  color: rgb(20, 20, 20);
+}
 
 /* review badge */
 .review {
@@ -16,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #fff; /* bijeli obrub da se odvoji od slike */
+  border: 3px solid #fff; 
 }
 
 
@@ -30,13 +33,13 @@
   display: block;
 }
 
-/* settings dugme */
+/* settings button */
 .settings-btn {
   position: absolute;
   top: 20px;
-  right: 20%;               /* postavi prema centru */
-  transform: translate(50%, -50%); /* gurni na gornji desni border */
-  background: rgb(91, 119, 168);         /* da se odvoji od slike */
+  right: 20%;               
+  transform: translate(50%, -50%);
+  background: rgb(91, 119, 168);         
   border-radius: 50%;
   width: 36px;
   height: 36px;

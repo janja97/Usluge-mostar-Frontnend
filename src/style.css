@@ -4,13 +4,13 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: rgb(245, 245, 245);
+}
+.body {
+  background-color: var(--color-light-gray);
 }
 
-body {
-    background-color: rgb(245, 245, 245) !important;
 
-}
 .playfair {
   font-family: 'Playfair Display', serif;
 }
+

@@ -1,0 +1,20 @@
+:root {
+  --color-gray: #334155;
+  --color-light-gray: #f5f5f5; 
+
+  --color-orange: #f59e0b;
+  --color-orange-hover: #d97706;
+  
+  --color-blue: #3b82f6;
+  --color-light-blue: #60a5fa; 
+  --color-dark-blue: #1d4ed8;
+  --bg-dark-blue: #183070;
+
+  --color-blue-hover: #2563eb;
+  --color-light-blue-hover: #3b82f6; 
+  --color-dark-blue-hover: #1e40af; 
+
+  /* Text*/
+  --color-text-dark: #111;
+  --color-text-light: #f2f1f1;
+}

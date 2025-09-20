@@ -1,11 +1,10 @@
 <template>
   <div class="container pt-5">
     <div class="d-flex flex-wrap">
-      <!-- Lijevi dio: Header -->
       <ProfileHeader :user="user" :services="services" class="col-md-4 col-12" />
 
-      <!-- Desni dio: ServicesList -->
       <ServicesList class="col-md-8 col-12 p-3" />
+      
     </div>
   </div>
 </template>

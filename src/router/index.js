@@ -4,13 +4,24 @@ import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import CompleteProfile from '../views/CompleteProfile.vue';
 import Profile from '../views/Profile.vue';
+import Services from '../views/Services.vue';
+import ServiceDetails from "../views/ServiceDetails.vue";
+
 
 const routes = [
   { path: '/', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/complete-profile', name: 'CompleteProfile', component: CompleteProfile, meta: { requiresAuth: true } },
-  { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } }
+  { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } },
+  { path: '/services', name: 'Services', component: Services, meta: { requiresAuth: true } },
+  {
+    path: '/service/:id',
+    name: 'ServiceDetails',
+    component: () => import('../views/ServiceDetails.vue'),
+    props: true
+  }
+
 ];
 
 const router = createRouter({
