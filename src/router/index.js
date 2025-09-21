@@ -6,7 +6,7 @@ import CompleteProfile from '../views/CompleteProfile.vue';
 import Profile from '../views/Profile.vue';
 import Services from '../views/Services.vue';
 import ServiceDetails from "../views/ServiceDetails.vue";
-
+import ErrorPage from "../views/Error.vue"; // 👈 dodaj import
 
 const routes = [
   { path: '/', component: Home },
@@ -20,8 +20,14 @@ const routes = [
     name: 'ServiceDetails',
     component: () => import('../views/ServiceDetails.vue'),
     props: true
-  }
+  },
 
+  // 👇 catch-all ruta za sve nepostojeće putanje
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: ErrorPage
+  }
 ];
 
 const router = createRouter({
