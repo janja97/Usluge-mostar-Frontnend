@@ -5,8 +5,7 @@ import Register from '../views/Register.vue';
 import CompleteProfile from '../views/CompleteProfile.vue';
 import Profile from '../views/Profile.vue';
 import Services from '../views/Services.vue';
-import ServiceDetails from "../views/ServiceDetails.vue";
-import ErrorPage from "../views/Error.vue"; // 👈 dodaj import
+import ErrorPage from "../views/Error.vue"; 
 
 const routes = [
   { path: '/', component: Home },
@@ -22,12 +21,12 @@ const routes = [
     props: true
   },
 
-  // 👇 catch-all ruta za sve nepostojeće putanje
+  // catch-all 
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: ErrorPage
-  }
+  },
 ];
 
 const router = createRouter({
