@@ -7,11 +7,10 @@
       "stana",
       "apartmana",
       "auta",
-      "prozora",
       "tepih",
       "namjestaja",
       "garaza",
-      "poslovnog_prostora"
+      "poslovnog prostora"
     ]
   },
   {
@@ -24,89 +23,73 @@
       "bravar",
       "moler",
       "stolar",
-      "klima_servis",
-      "popravka_uredaja"
+      "klima servis",
+      "popravka uredaja"
     ]
   },
   {
-    "category": "briga_i_pomoc",
+    "category": "briga i pomoc",
     "subcategories": [
-      "cuvanje_djece",
-      "cuvanje_starih_ljudi",
-      "njege_starih_i_nepokretnih_osoba",
-      "pomoc_u_kuci",
-      "prva_pomoc",
-      "setnje_psa",
-      "hrana_i_njega_kuce",
-      "kupovina_za_starije_osobe"
+      "cuvanje djece",
+      "njege starih i nepokretnih osoba",
+      "kupovina za starije osobe",
+      "pomoc u kuci",
+      "čuvanje ljubimaca"
     ]
   },
   {
     "category": "instrukcije",
     "subcategories": [
-      "matematika_osnovna",
-      "matematika_srednja",
-      "fizika_osnovna",
-      "fizika_srednja",
-      "hemija_osnovna",
-      "hemija_srednja",
-      "biologija_osnovna",
-      "biologija_srednja",
-      "istorija",
+      "matematika osnovna",
+      "matematika srednja",
+      "fizika osnovna",
+      "fizika srednja",
+      "hemija osnovna",
+      "hemija srednja",
+      "biologija osnovna",
+      "biologija srednja",
+      "povijest",
       "geografija",
-      "jezici_strani",
-      "jezici_maternji",
+      "jezici strani",
+      "jezici maternji",
       "muzika",
       "programiranje",
       "informatika",
-      "likovna_umjetnost",
+      "likovna umjetnost",
       "sport"
     ]
   },
   {
-    "category": "zabava_i_rekreacija",
-    "subcategories": [
-      "organizacija_proslava",
-      "plesni_casovi",
-      "yoga_i_fitness",
-      "sportski_trening",
-      "kampiranje",
-      "planinarenje",
-      "biciklizam",
-      "putovanja"
-    ]
-  },
-  {
-    "category": "transport_i_dostava",
+    "category": "transport i dostava",
     "subcategories": [
       "vozac",
       "kurir",
-      "dostava_robe",
+      "dostava robe",
       "selidbe",
-      "prijevoz_vozilom"
+      "prijevoz vozilom"
     ]
   },
   {
-    "category": "it_i_tehnologija",
+    "category": "it i tehnologija",
     "subcategories": [
-      "popravka_racunara",
-      "instalacija_softvera",
-      "web_dizajn",
+      "popravka racunara",
+      "instalacija softvera",
+      "web dizajn",
       "programiranje",
-      "odrzavanje_mreze",
-      "savjetovanje_it"
+      "odrzavanje mreze",
+      "savjetovanje it"
     ]
   },
   {
-    "category": "kreativne_usluge",
+    "category": "kreativne usluge",
     "subcategories": [
       "fotografija",
-      "video_snimaanje",
-      "graficki_dizajn",
-      "pisanje_tekstova",
+      "video snimaanje",
+      "graficki dizajn",
+      "pisanje tekstova",
       "prevodjenje",
-      "crtanje_ilustracije",
-      "izrada_suvenira"
+      "crtanje ilustracije",
+      "izrada suvenira"
     ]
   },
   {
