@@ -12,24 +12,28 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
+import { useUserStore } from './store/user'
 
 
 const user = ref(null);
 
-// dohvat usera prilikom mountanja aplikacije
+
+const userStore = useUserStore();
+
 const loadUser = async () => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) return; // ako nema tokena, nema prijavljenog usera
+    if (!token) return;
 
     const res = await axios.get('/auth/me', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    user.value = res.data.user;
 
-    // ispis osnovnih podataka u konzolu
+    user.value = res.data.user;
+    userStore.user = res.data.user;
+
     console.log('User loaded:', {
       fullName: user.value.fullName,
       email: user.value.email,
@@ -39,8 +43,10 @@ const loadUser = async () => {
   } catch (err) {
     console.error('Error loading user:', err);
     user.value = null;
+    userStore.user = null;
   }
 };
+
 
 onMounted(loadUser);
 

@@ -17,7 +17,12 @@
         <p class="mb-0">{{ truncateDescription(service.description) }}</p>
       </div>
 
-      <button class="btn-favorite ms-3" @click.stop="toggleFavorite(service._id)">
+      <!-- Heart icon samo ako je user logiran -->
+      <button 
+        v-if="isLoggedIn" 
+        class="btn-favorite ms-3" 
+        @click.stop="toggleFavorite(service._id)"
+      >
         <i :class="favorites.includes(service._id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
       </button>
     </div>
@@ -25,8 +30,9 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '../../store/user'
 
 const props = defineProps({
   services: Array,
@@ -35,12 +41,15 @@ const props = defineProps({
 const emit = defineEmits(['toggle-favorite'])
 
 const router = useRouter()
+const userStore = useUserStore()
+const isLoggedIn = computed(() => !!userStore.user)
 
 const goToService = (id) => {
   router.push(`/service/${id}`)
 }
 
 const toggleFavorite = (id) => {
+  if (!isLoggedIn.value) return
   emit('toggle-favorite', id)
 }
 
@@ -49,6 +58,7 @@ const truncateDescription = (desc) => {
   return desc.length > 50 ? desc.substring(0, 50) + '...' : desc
 }
 </script>
+
 
 <style scoped>
 .service-row {

@@ -18,23 +18,28 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import api from '../services/api'
+import { useUserStore } from '../store/user'
 import ServiceFilters from '../components/Services/ServiceFilters.vue'
 import ServicesList from '../components/Services/ServicesList.vue'
 
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
+
 const services = ref([])
+const favorites = ref([])
+
 const searchQuery = ref('')
 const selectedCategory = ref(null)
 const minPrice = ref(null)
 const maxPrice = ref(null)
-const priceSort = ref('') // asc / desc
-const favorites = ref([])
+const priceSort = ref('')
 
-// LOAD ALL SERVICES FROM BACKEND
+// --- Load all services
 const loadServices = async () => {
   try {
-    const res = await api.get('/services') // backend returns all
+    const res = await api.get('/services')
     services.value = Array.isArray(res.data) ? res.data : []
   } catch (err) {
     console.error('Error loading services:', err)
@@ -42,35 +47,39 @@ const loadServices = async () => {
   }
 }
 
-// FRONTEND FILTER + SORT
+// --- Load favorites for logged-in user
+const loadFavorites = async () => {
+  if (!user.value) return
+  try {
+    const res = await api.get('/favorites') // backend ruta
+    favorites.value = res.data.favorites || []
+  } catch (err) {
+    console.error('Error loading favorites:', err)
+  }
+}
+
+// --- Filter + sort
 const filteredServices = computed(() => {
   let filtered = services.value
 
-  // Search filter
-  if (searchQuery.value) {
-    filtered = filtered.filter(s => {
-      const name = s.customService || s.subcategory || ''
-      return name.toLowerCase().includes(searchQuery.value.toLowerCase())
-    })
-  }
+  if (searchQuery.value)
+    filtered = filtered.filter(s =>
+      (s.customService || s.subcategory || '').toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
 
-  // Category filter
-  if (selectedCategory.value) {
+  if (selectedCategory.value)
     filtered = filtered.filter(s => s.category === selectedCategory.value)
-  }
 
-  // Min/Max price
   if (minPrice.value !== null) filtered = filtered.filter(s => s.price >= minPrice.value)
   if (maxPrice.value !== null) filtered = filtered.filter(s => s.price <= maxPrice.value)
 
-  // Sort by price
-  if (priceSort.value === 'asc') filtered = filtered.slice().sort((a,b) => a.price - b.price)
-  else if (priceSort.value === 'desc') filtered = filtered.slice().sort((a,b) => b.price - a.price)
+  if (priceSort.value === 'asc') filtered = filtered.slice().sort((a, b) => a.price - b.price)
+  else if (priceSort.value === 'desc') filtered = filtered.slice().sort((a, b) => b.price - a.price)
 
   return filtered
 })
 
-// Update filters from child component
+// --- Update filters from child component
 const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSort: sort }) => {
   searchQuery.value = search
   selectedCategory.value = category
@@ -79,13 +88,26 @@ const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSor
   priceSort.value = sort
 }
 
-const toggleFavorite = (id) => {
-  if (favorites.value.includes(id)) {
-    favorites.value = favorites.value.filter(f => f !== id)
-  } else {
-    favorites.value.push(id)
+// --- Toggle favorite
+const toggleFavorite = async (serviceId) => {
+  if (!user.value) {
+    alert('Morate biti prijavljeni da biste dodali favorite.')
+    return
+  }
+
+  try {
+    const res = await api.post(`/favorites/${serviceId}`) // backend ruta
+    favorites.value = res.data.favorites || []
+  } catch (err) {
+    console.error('Error toggling favorite:', err)
   }
 }
 
-onMounted(() => loadServices())
+// --- Watch user changes
+watch(user, () => loadFavorites())
+
+onMounted(() => {
+  loadServices()
+  if (user.value) loadFavorites()
+})
 </script>
