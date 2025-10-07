@@ -1,3 +1,4 @@
+
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
@@ -12,8 +13,20 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/complete-profile', name: 'CompleteProfile', component: CompleteProfile, meta: { requiresAuth: true } },
+  
+  // Own profile (logged-in user)
   { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } },
+
+  // Public or other user's profile (accessible via ID)
+  {
+    path: '/profile/:id',
+    name: 'UserProfile',
+    component: Profile,
+    props: true,
+  },
+
   { path: '/services', name: 'Services', component: Services, meta: { requiresAuth: true } },
+  
   {
     path: '/service/:id',
     name: 'ServiceDetails',
@@ -21,7 +34,7 @@ const routes = [
     props: true
   },
 
-  // catch-all 
+  // catch-all
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -32,8 +45,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
+});
 
+// Auth guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
   if (to.meta.requiresAuth && !token) next({ name: 'Login' });
@@ -41,3 +55,4 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
+

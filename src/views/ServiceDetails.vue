@@ -37,8 +37,19 @@
       <p><strong>Opis:</strong> {{ service.description || "Nema opisa" }}</p>
 
       <div class="mt-3">
-        <p><strong>Objavio:</strong> {{ service.user?.fullName || "Nepoznat korisnik" }}</p>
+        <p>
+          <strong>Objavio:</strong>
+          <router-link
+            v-if="service.user"
+            :to="`/profile/${service.user._id}`"
+            class="text-decoration-none text-primary"
+          >
+            {{ service.user.fullName }}
+          </router-link>
+          <span v-else>Nepoznat korisnik</span>
+        </p>
       </div>
+      <p>{{ service.user }}</p>
 
       <router-link to="/" class="btn btn-secondary mt-3">
         ← Povratak

@@ -7,7 +7,7 @@
         v-for="fav in favorites"
         :key="fav._id"
         class="favorite-card d-flex justify-content-between align-items-center p-3 mb-3 border rounded shadow-sm"
-        @click="goToService(fav._id)"  <!-- Navigate to service detail page -->
+        @click="goToService(fav._id)"  
         style="cursor: pointer;"
       >
         <div>

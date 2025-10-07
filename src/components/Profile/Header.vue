@@ -8,7 +8,7 @@
         </div>
 
         <!-- Settings button -->
-        <div class="settings-btn" @click="openModal">
+        <div v-if="user && user._id === loggedInUserId" class="settings-btn" @click="openModal">
           <i class="bi bi-gear"></i>
         </div>
       </div>
@@ -25,7 +25,6 @@
         </p>
       </div>
     </div>
-    <p>{{ user }}</p>
 
     <!-- Edit Profile Modal -->
     <div
@@ -50,41 +49,30 @@
                 <label>Full Name</label>
                 <input v-model="form.fullName" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>Phone</label>
                 <input v-model="form.phone" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>New Password</label>
                 <input type="password" v-model="form.password" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>City</label>
                 <input v-model="form.city" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>Profession</label>
                 <input v-model="form.profession" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>Birth Year</label>
                 <input type="number" v-model="form.birthYear" class="form-control" />
               </div>
-
               <div class="mb-2">
                 <label>About Me</label>
                 <textarea v-model="form.about" class="form-control"></textarea>
               </div>
-
-              <!-- <div class="mb-2">
-                <label>Avatar</label>
-                <input type="file" @change="handleFileUpload" class="form-control" />
-              </div> -->
             </form>
           </div>
 
@@ -115,10 +103,10 @@ import { ref, reactive, computed, watch } from "vue";
 export default {
   props: {
     user: { type: Object, required: false },
+    loggedInUserId: { type: String, required: false },
   },
   emits: ["updateUser", "deleteUser"],
   setup(props, { emit }) {
-    const defaultAvatar = "/default-avatar.png";
     const modalRef = ref(null);
 
     const form = reactive({
@@ -161,10 +149,6 @@ export default {
       if (modalInstance) modalInstance.hide();
     };
 
-    const handleFileUpload = (e) => {
-      form.avatar = e.target.files[0];
-    };
-
     const saveChanges = async () => {
       try {
         const formData = new FormData();
@@ -201,11 +185,9 @@ export default {
     return {
       form,
       fullName,
-      defaultAvatar,
       modalRef,
       openModal,
       closeModal,
-      handleFileUpload,
       saveChanges,
       deleteUser,
     };
@@ -214,25 +196,6 @@ export default {
 </script>
 
 <style scoped>
-.profile-img-wrapper {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #f0f0f0;
-}
-
-.profile-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.profile-img-wrapper i {
-  font-size: 5rem;
-}
-
 .settings-btn {
   position: absolute;
   bottom: 0;
