@@ -48,10 +48,17 @@
           </router-link>
           <span v-else>Nepoznat korisnik</span>
         </p>
-      </div>
-      <p>{{ service.user }}</p>
 
-      <router-link to="/" class="btn btn-secondary mt-3">
+        <button
+          v-if="service.user && service.user._id !== loggedUserId"
+          class="btn btn-primary mt-2"
+          @click="goToChat"
+        >
+          💬 Pošalji poruku
+        </button>
+      </div>
+
+      <router-link to="/" class="btn btn-secondary mt-4">
         ← Povratak
       </router-link>
     </div>
@@ -64,47 +71,20 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import api from "../services/api";
 
 const route = useRoute();
+const router = useRouter();
 const service = ref(null);
 const loading = ref(true);
 const isFavorite = ref(false);
+const loggedUserId = localStorage.getItem("userId"); // 
 
 onMounted(async () => {
   await fetchService();
   await fetchFavorites();
 });
-
-// onMounted(async () => {
-//   loading.value = true;
-//   try {
-//     // 1. Dohvati service
-//     const serviceRes = await api.get(`/services/${route.params.id}`, {
-//       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//     });
-//     service.value = serviceRes.data;
-
-//     // 2. Dohvati korisnikove favorite
-//     const userRes = await api.get("/favorite", {
-//       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//     });
-//     // Pretpostavimo da backend vraća { favorites: [serviceId1, serviceId2, ...] }
-//     const favIds = Array.isArray(userRes.data.favorites)
-//       ? userRes.data.favorites.map(String)
-//       : [];
-
-//     // 3. Provjeri da li je otvoreni service među favoritima
-//     isFavorite.value = favIds.includes(String(route.params.id));
-
-//   } catch (err) {
-//     console.error("❌ Greška kod učitavanja servisa ili favorita:", err);
-//   } finally {
-//     loading.value = false;
-//   }
-// });
-
 
 const fetchService = async () => {
   try {
@@ -133,7 +113,12 @@ const fetchFavorites = async () => {
   }
 };
 
-// Toggle favorite
+const goToChat = () => {
+  if (service.value?.user?._id) {
+    router.push(`/messages/${service.value.user._id}`)  
+  }
+}
+
 const toggleFavorite = async () => {
   try {
     await api.post(`/favorites/${route.params.id}`, {}, {
@@ -141,7 +126,7 @@ const toggleFavorite = async () => {
     });
     isFavorite.value = !isFavorite.value;
   } catch (err) {
-    console.error("❌ Greška kod dodavanja/uklanjanja favorita:", err.response?.data || err);
+    console.error("❌ Greška kod favorita:", err.response?.data || err);
     alert("Greška pri spremanju omiljenih. Provjeri prijavu ili backend.");
   }
 };

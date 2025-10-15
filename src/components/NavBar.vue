@@ -70,7 +70,9 @@ const menuOpen = ref(false);
 const leftRoutes = [
   { path: '/', name: 'Home' },
   { path: '/profile', name: 'Profile' },
-  { path: '/services', name: 'Services' }
+  { path: '/services', name: 'Services' },
+  { path: '/messages', name: 'Messenger' }
+
 ];
 
 function logout() {
