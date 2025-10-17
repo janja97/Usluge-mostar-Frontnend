@@ -3,7 +3,24 @@
     <h2 class="page-title">Complete Your Profile</h2>
 
     <!-- Profile form -->
-    <form @submit.prevent="submitProfile" class="row g-3">
+    <form @submit.prevent="submitProfile" class="row g-3" enctype="multipart/form-data">
+      <!-- Profile image upload -->
+      <div class="col-12 text-center">
+        <div class="avatar-upload">
+          <label for="avatarInput" class="form-label fw-bold">Profilna slika</label>
+          <div class="avatar-preview" v-if="previewUrl">
+            <img :src="previewUrl" alt="Preview" class="rounded-circle shadow" />
+          </div>
+          <input 
+            type="file" 
+            id="avatarInput"
+            accept="image/*"
+            class="form-control mt-2"
+            @change="handleImageUpload"
+          />
+        </div>
+      </div>
+
       <!-- Basic info fields -->
       <div class="col-md-6">
         <label class="form-label">Ime</label>
@@ -17,7 +34,6 @@
         <label class="form-label">Godište</label>
         <select v-model="form.birthYear" class="form-control">
           <option disabled value="">Odaberite godinu</option>
-          <!-- Generate list of years dynamically -->
           <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
         </select>
       </div>
@@ -36,13 +52,12 @@
           type="tel" 
           class="form-control" 
           maxlength="20"
-          pattern="[0-9+\-\s]*" <!-- Allow numbers, +, -, and spaces -->
+          pattern="[0-9+\-\s]*"
           placeholder="+387 63 123 456"
         />
       </div>
       <div class="col-12">
         <label class="form-label">Email</label>
-        <!-- Email is read-only, fetched from backend -->
         <input v-model="form.email" type="email" class="form-control" readonly />
       </div>
 
@@ -58,27 +73,6 @@
         ></textarea>
       </div>
 
-      <!-- Services section (currently commented out) -->
-      <!-- 
-      <div class="col-12">
-        <h4 class="section-title">Usluge</h4>
-        <ServiceItem
-          v-for="(s, index) in services"
-          :key="index"
-          :initialData="s"
-          @update="updateService($event, index)"
-          @remove="removeService(index)"
-        />
-        <button 
-          type="button" 
-          class="btn btn-outline-blue mt-3" 
-          @click="addService"
-        >
-          + Dodaj novu uslugu
-        </button>
-      </div> 
-      -->
-
       <!-- Submit button -->
       <div class="col-12 text-center mt-4">
         <button type="submit" class="btn btn-orange px-5">💾 Spremi</button>
@@ -91,18 +85,14 @@
 import { reactive, onMounted, ref } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
-import ServiceItem from '../components/ServiceItem.vue'
 
 const router = useRouter()
 
-// Generate a list of years (last 100 years starting from current year)
+// Lista godina
 const currentYear = new Date().getFullYear()
-const years = ref([])
-for (let i = 0; i < 100; i++) {
-  years.value.push(currentYear - i)
-}
+const years = ref(Array.from({ length: 100 }, (_, i) => currentYear - i))
 
-// Reactive object for form fields
+// Reactive objekt za formu
 const form = reactive({
   firstName: '',
   lastName: '',
@@ -114,10 +104,20 @@ const form = reactive({
   about: ''
 })
 
-// Reactive array for services (if user adds multiple services)
-const services = reactive([])
+// Slika (upload)
+const avatarFile = ref(null)
+const previewUrl = ref(null)
 
-// Fetch current logged-in user when component is mounted
+// Kada korisnik odabere sliku
+const handleImageUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    avatarFile.value = file
+    previewUrl.value = URL.createObjectURL(file)
+  }
+}
+
+// Dohvati user email prilikom mountanja
 onMounted(async () => {
   try {
     const res = await api.get('/auth/me')
@@ -127,28 +127,25 @@ onMounted(async () => {
   }
 })
 
-// Add new service to the list
-const addService = () => services.push({ service: '', customService: '', priceType: '', priceAmount: '' })
-
-// Remove service by index
-const removeService = (index) => services.splice(index, 1)
-
-// Update specific service at given index
-const updateService = (data, index) => services[index] = { ...data }
-
-// Submit profile data to backend
+// Submit profila
 const submitProfile = async () => {
   try {
-    // Send user profile data
-    const userPayload = { ...form }
-    await api.put('/users/profile', userPayload)
+    const formData = new FormData()
+    formData.append('fullName', `${form.firstName} ${form.lastName}`)
+    formData.append('birthYear', form.birthYear)
+    formData.append('profession', form.profession)
+    formData.append('city', form.city)
+    formData.append('phone', form.phone)
+    formData.append('about', form.about)
 
-    // If services exist, send them separately
-    if (services.length > 0) {
-      await api.post('/services', { services: services })
+    if (avatarFile.value) {
+      formData.append('avatar', avatarFile.value)
     }
 
-    // Redirect user to profile page after successful save
+    await api.put('/users/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+
     router.push('/profile')
   } catch (err) {
     console.error('Error saving profile:', err.response?.data || err)
@@ -165,18 +162,27 @@ const submitProfile = async () => {
   margin-bottom: 2rem;
 }
 
-.section-title {
-  color: var(--color-gray);
-  margin-top: 1rem;
-}
-
-/* Gray background wrapper */
 .bg-light-gray {
   background-color: var(--color-light-gray);
   padding: 2rem;
 }
 
-/* Primary orange button */
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-preview img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-orange);
+  margin-bottom: 10px;
+}
+
 .btn-orange {
   background-color: var(--color-orange);
   color: var(--color-text-light);
@@ -184,16 +190,5 @@ const submitProfile = async () => {
 }
 .btn-orange:hover {
   background-color: var(--color-orange-hover);
-}
-
-/* Secondary outlined blue button */
-.btn-outline-blue {
-  border: 2px solid var(--color-blue);
-  color: var(--color-blue);
-  background: transparent;
-}
-.btn-outline-blue:hover {
-  background-color: var(--color-light-blue);
-  color: var(--color-text-light);
 }
 </style>
