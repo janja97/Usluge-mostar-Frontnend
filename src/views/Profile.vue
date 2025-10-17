@@ -6,7 +6,7 @@
         class="col-md-4 col-12"
         @updateUser="updateUser"
         @deleteUser="removeUser"
-        :loggedInUserId="loggedInUserId"
+        :isOwnProfile="isOwnProfile"
       />
 
       <div class="col-md-8 col-12 p-3">
@@ -21,12 +21,12 @@
               Aktivni oglasi
             </button>
           </li>
-          <li class="nav-item" v-if="!route.params.id || route.params.id === loggedInUserId">
+          <li class="nav-item" v-if="isOwnProfile">
             <button class="nav-link" :class="{ active: activeTab === 'favorites' }" @click="activeTab = 'favorites'">
               Omiljeni
             </button>
           </li>
-          <li class="nav-item" v-if="!route.params.id || route.params.id === loggedInUserId">
+          <li class="nav-item" v-if="isOwnProfile">
             <button class="nav-link" :class="{ active: activeTab === 'add' }" @click="activeTab = 'add'">
               Dodaj novu uslugu
             </button>
@@ -44,10 +44,10 @@
             ref="servicesListRef"
           />
 
-          <FavoritesList v-if="activeTab === 'favorites' && (!route.params.id || route.params.id === loggedInUserId)" />
+          <FavoritesList v-if="activeTab === 'favorites' && isOwnProfile" />
 
           <AddService
-            v-if="activeTab === 'add' && (!route.params.id || route.params.id === loggedInUserId)"
+            v-if="activeTab === 'add' && isOwnProfile"
             @serviceAdded="refreshServices"
           />
         </div>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useUserStore } from "../store/user";
 import { useRoute } from "vue-router";
 import api from "../services/api";
@@ -73,14 +73,8 @@ const servicesListRef = ref(null);
 const route = useRoute();
 const loggedInUserId = ref(null);
 
-const updateUser = (updated) => {
-  user.value = updated;
-};
-
-const removeUser = () => {
-  user.value = null;
-};
-
+const updateUser = (updated) => { user.value = updated; };
+const removeUser = () => { user.value = null; };
 const refreshServices = () => {
   activeTab.value = "services";
   servicesListRef.value?.fetchServices();
@@ -88,7 +82,6 @@ const refreshServices = () => {
 
 const fetchUser = async () => {
   if (route.params.id) {
-   
     try {
       const res = await api.get(`/users/${route.params.id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -105,10 +98,8 @@ const fetchUser = async () => {
 };
 
 onMounted(fetchUser);
+watch(() => route.params.id, () => fetchUser());
 
-
-watch(
-  () => route.params.id,
-  () => fetchUser()
-);
+// ✅ boolean za own profile
+const isOwnProfile = computed(() => !route.params.id || route.params.id === loggedInUserId.value);
 </script>
