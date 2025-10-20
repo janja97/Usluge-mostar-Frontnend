@@ -6,7 +6,16 @@
       class="service-row d-flex align-items-center mb-3 p-3 border rounded"
       @click="goToService(service._id)"
     >
-      <div class="service-image me-3"></div>
+      
+      <div class="service-image-wrapper me-3">
+        <img 
+          v-if="service.images && service.images.length"
+          :src="'data:image/jpeg;base64,' + service.images[0]"
+          alt="Service image"
+          class="service-image"
+        />
+        <div v-else class="service-placeholder"></div>
+      </div>
 
       <div class="service-info flex-grow-1">
         <h5 class="mb-1">{{ service.customService || service.subcategory || 'Usluga' }}</h5>
@@ -17,7 +26,7 @@
         <p class="mb-0">{{ truncateDescription(service.description) }}</p>
       </div>
 
-      <!-- Heart icon samo ako je user logiran -->
+      
       <button 
         v-if="isLoggedIn" 
         class="btn-favorite ms-3" 
@@ -59,7 +68,6 @@ const truncateDescription = (desc) => {
 }
 </script>
 
-
 <style scoped>
 .service-row {
   cursor: pointer;
@@ -71,13 +79,30 @@ const truncateDescription = (desc) => {
 .service-row:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.service-image {
+
+
+.service-image-wrapper {
   width: 100px;
   height: 100px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.service-placeholder {
+  width: 100%;
+  height: 100%;
   background-color: #ddd;
   border-radius: 8px;
-  flex-shrink: 0;
 }
+
 .service-info h5 {
   font-size: 1.1rem;
 }

@@ -3,29 +3,40 @@
   <section class="featured-services">
     <div class="container">
       <div class="featured-header">
-        <h2 class="section-title">Istaknute usluge</h2>
-        <router-link to="/services" class="btn primary">Vidi sve oglase</router-link>
+        <h2 class="section-title">Featured Services</h2>
+        <router-link to="/services" class="btn primary">View All Listings</router-link>
       </div>
 
       <div v-if="featuredServices.length === 0" class="text-center">
-        <p>Trenutno nema dostupnih usluga.</p>
+        <p>There are currently no available services.</p>
       </div>
 
       <div class="services-grid" v-else>
         <div class="service-card" v-for="(s, index) in featuredServices" :key="index">
+          <!-- ✅ Display image or gray placeholder -->
+          <div class="card-image-wrapper">
+            <img
+              v-if="s.images && s.images.length > 0"
+              :src="`data:image/jpeg;base64,${s.images[0]}`"
+              alt="Service"
+              class="card-image"
+            />
+            <div v-else class="card-placeholder"></div>
+          </div>
+
           <div class="card-content">
             <h5 class="card-title">
-              {{ s.subcategory || s.category || s.customService || 'Nepoznata usluga' }}
+              {{ s.subcategory || s.category || s.customService || 'Unknown Service' }}
             </h5>
             <p class="card-user">{{ s.user.fullName }}</p>
             <p class="card-service">{{ s.service === 'ostalo' ? s.customService : s.service }}</p>
             <p class="card-price">
-              Cijena:
-              <span v-if="s.priceType === 'dogovor'">Po dogovoru</span>
+              Price:
+              <span v-if="s.priceType === 'dogovor'">Negotiable</span>
               <span v-else-if="s.priceType === 'sat' || s.priceType === 'dnevno'">
-                {{ s.price ? `${s.price} €/${s.priceType === 'sat' ? 'sat' : 'dnevno'}` : 'Nije definirano' }}
+                {{ s.price ? `${s.price} €/${s.priceType === 'sat' ? 'hour' : 'day'}` : 'Not defined' }}
               </span>
-              <span v-else>Nije definirano</span>
+              <span v-else>Not defined</span>
             </p>
             <p class="card-description">
               {{ s.description && s.description.length > 50
@@ -33,8 +44,9 @@
                 : s.description }}
             </p>
           </div>
+
           <div class="card-footer">
-            <router-link :to="`/service/${s._id}`" class="btn primary px-3 py-2 fs-6">Više detalja</router-link>
+            <router-link :to="`/service/${s._id}`" class="btn primary px-3 py-2 fs-6">View Details</router-link>
           </div>
         </div>
       </div>
@@ -50,13 +62,14 @@ import api from '../../services/api';
 const services = ref([]);
 const featuredServices = ref([]);
 
+// Load all services
 const loadServices = async () => {
   try {
     const res = await api.get('/services');
     services.value = res.data;
-    featuredServices.value = res.data.slice(0, 8);
+    featuredServices.value = res.data.slice(0, 8); // Get first 8 featured
   } catch (err) {
-    console.error('Greška kod dohvata usluga:', err);
+    console.error('Error fetching services:', err);
   }
 };
 
@@ -66,11 +79,10 @@ onMounted(loadServices);
 <style scoped>
 .featured-services {
   padding: 6rem 2rem;
-  background: var( --color-light-gray);
+  background: var(--color-light-gray);
   font-family: 'Inter', sans-serif;
 }
 
-/* Header */
 .featured-header {
   display: flex;
   justify-content: space-between;
@@ -108,6 +120,29 @@ onMounted(loadServices);
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
+/* ✅ Added for image display or gray div */
+.card-image-wrapper {
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #ddd;
+  border-radius: 8px;
+}
+
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -139,8 +174,6 @@ onMounted(loadServices);
   color: #555;
   margin-bottom: 1rem;
 }
-
-
 
 @media (max-width: 768px) {
   .section-title {
