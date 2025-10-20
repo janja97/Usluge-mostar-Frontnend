@@ -12,6 +12,7 @@
     "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "browser-image-compression": "^2.0.2",
     "nouislider": "^15.8.1",
     "pinia": "^3.0.3",
     "socket.io-client": "^4.8.1",

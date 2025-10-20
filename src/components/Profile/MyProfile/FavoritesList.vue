@@ -10,20 +10,29 @@
         @click="goToService(fav._id)"  
         style="cursor: pointer;"
       >
-        <div>
-          <!-- Service name -->
-          <strong class="service-title">{{ getServiceName(fav) }}</strong><br>
+        <div class="d-flex align-items-center gap-3">
+          <!-- ✅ Service image or placeholder -->
+          <div class="image-wrapper">
+            <img
+              v-if="fav.images && fav.images.length"
+              :src="'data:image/jpeg;base64,' + fav.images[0]"
+              alt="Service image"
+              class="service-image"
+            />
+            <div v-else class="service-placeholder"></div>
+          </div>
 
-          <!-- Category / Subcategory -->
-          <span class="service-category">{{ formatCategory(fav.category) }}</span>
-          <span v-if="fav.subcategory"> | {{ formatCategory(fav.subcategory) }}</span><br>
-
-          <!-- Price -->
-          <span class="service-price">
-            {{ fav.price ? fav.price + ' KM' : 'Negotiable' }}
-            <span v-if="fav.priceType === 'sat'">/hour</span>
-            <span v-else-if="fav.priceType === 'dnevno'">/day</span>
-          </span>
+          <!-- ✅ Text details -->
+          <div>
+            <strong class="service-title">{{ getServiceName(fav) }}</strong><br>
+            <span class="service-category">{{ formatCategory(fav.category) }}</span>
+            <span v-if="fav.subcategory"> | {{ formatCategory(fav.subcategory) }}</span><br>
+            <span class="service-price">
+              {{ fav.price ? fav.price + ' KM' : 'Negotiable' }}
+              <span v-if="fav.priceType === 'sat'">/hour</span>
+              <span v-else-if="fav.priceType === 'dnevno'">/day</span>
+            </span>
+          </div>
         </div>
 
         <!-- Favorite heart icon -->
@@ -45,45 +54,38 @@ import api from "../../../services/api";
 const favorites = ref([]);
 const router = useRouter();
 
-// Navigate to service detail page
 const goToService = (id) => {
   router.push(`/service/${id}`);
 };
 
-// Return service name (priority: subcategory > customService > category)
 const getServiceName = (fav) => {
   return fav.subcategory || fav.customService || fav.category || "Unknown";
 };
 
-// Format category or subcategory for display (capitalize and replace underscores)
 const formatCategory = (cat) => {
   return cat ? cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '';
 };
 
-// Fetch favorites on component mount
 onMounted(async () => {
   await loadFavorites();
 });
 
-// Function to load favorites from backend
 const loadFavorites = async () => {
   try {
     const res = await api.get("/favorites", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
-    favorites.value = res.data; // backend returns full service objects
+    favorites.value = res.data;
   } catch (err) {
     console.error("❌ Error fetching favorites:", err.response?.data || err);
   }
 };
 
-// Toggle favorite (add or remove from favorites)
 const toggleFavorite = async (serviceId) => {
   try {
     await api.post(`/favorites/${serviceId}`, {}, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
-    // Remove from frontend list immediately
     favorites.value = favorites.value.filter(f => f._id !== serviceId);
   } catch (err) {
     console.error("❌ Error removing favorite:", err.response?.data || err);
@@ -129,5 +131,29 @@ const toggleFavorite = async (serviceId) => {
 
 .favorite-icon i:hover {
   transform: scale(1.2);
+}
+
+/* ✅ Stilovi za sliku i placeholder */
+.image-wrapper {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+}
+
+.service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* ✅ Sivi placeholder ako nema slike */
+.service-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #dcdcdc;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 </style>

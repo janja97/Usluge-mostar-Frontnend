@@ -17,13 +17,27 @@
             :key="s._id"
             class="service py-3 d-flex justify-content-between align-items-center border-bottom"
           >
-            <div @click="goToService(s._id)" style="cursor:pointer;">
-              <strong>{{ getServiceName(s) }}</strong><br />
-              Tip cijene: {{ formatPriceType(s.priceType) }}<br />
-              Cijena: {{ s.price || "po dogovoru" }}<br />
-              <span v-if="s.description"><em>{{ s.description }}</em></span>
-              <p>Grad: {{ s.city }}</p>
+            <div @click="goToService(s._id)" style="cursor:pointer; display:flex; align-items:center; gap:1rem;">
+              <!-- MAIN IMAGE -->
+              <div class="main-img-wrapper" style="width:100px; height:100px; background:#eee; display:flex; align-items:center; justify-content:center;">
+                <img
+                  v-if="s.images && s.images.length > 0 && s.mainImg !== undefined"
+                  :src="'data:image/jpeg;base64,' + s.images[s.mainImg]"
+                  alt="Main"
+                  style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
+                />
+              </div>
+
+              <div>
+                <strong>{{ getServiceName(s) }}</strong><br />
+                Tip cijene: {{ formatPriceType(s.priceType) }}<br />
+                Cijena: {{ s.price || "po dogovoru" }}<br />
+                <span v-if="s.description"><em>{{ s.description }}</em></span>
+                <p>Grad: {{ s.city }}</p>
+                <p>Mode: {{ s.mode }}</p>
+              </div>
             </div>
+
             <div class="d-flex gap-2" v-if="isOwnProfile">
               <i
                 class="bi bi-pencil-square"
@@ -52,7 +66,7 @@
             <h5 class="modal-title">Uredi uslugu</h5>
             <button type="button" class="btn-close" @click="closeEditModal"></button>
           </div>
-          <form @submit.prevent="saveEdit" class="modal-body">
+          <form @submit.prevent="saveEdit" class="modal-body" enctype="multipart/form-data">
             <div class="row">
               <!-- Category -->
               <div class="col-md-6 mb-3">
@@ -150,6 +164,16 @@
                 />
               </div>
 
+              <!-- Mode -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Mode *</label>
+                <select v-model="editService.mode" class="form-select" required>
+                  <option value="">Odaberi</option>
+                  <option value="offer">Offer</option>
+                  <option value="demand">Demand</option>
+                </select>
+              </div>
+
               <!-- Description -->
               <div class="col-12 mb-3">
                 <label class="form-label">Opis usluge</label>
@@ -161,6 +185,19 @@
                 ></textarea>
                 <div class="form-text">{{ editWordCount }}/200 riječi</div>
               </div>
+
+              <!-- Images -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Galerija slika</label>
+                <input type="file" multiple @change="handleFileChange" class="form-control" />
+                <div class="d-flex gap-2 mt-2 flex-wrap">
+                  <div v-for="(img, idx) in editService.images" :key="idx" style="width:80px; height:80px; background:#eee; display:flex; align-items:center; justify-content:center; position:relative; border: solid 2px" :class="{'border-primary':editService.mainImg===idx}">
+                    <img :src="'data:image/jpeg;base64,' + img" style="width:100%; height:100%; object-fit:cover; border-radius:5px;" @click="setMainImage(idx)" />
+                    <button type="button" @click="removeImage(idx)" style="position:absolute; top:0; right:0; background:red; color:white; border:none; border-radius:50%;">×</button>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <div class="modal-footer">
@@ -202,31 +239,24 @@ import { Modal } from 'bootstrap'
 const props = defineProps({ 
   userId: { type: String, required: false },
   isOwnProfile: { type: Boolean, required: true }
-
- })
-
+})
 
 // --- STATE ---
 const router = useRouter()
 const services = ref([])
 const filteredServices = ref([])
 const editService = ref({})
+const newFiles = ref([])
 const deleteServiceId = ref(null)
-const loggedInUserId = computed(() => localStorage.getItem('userId'))
-
-
-const goToService = (id) => {
-  router.push(`/service/${id}`)
-}
-
-
-// LOADING STATE
 const loading = ref(true)
 
 
-// --- COMPUTED ---
+const loggedInUserId = localStorage.getItem('userId') || null
 const effectiveUserId = computed(() => props.userId || loggedInUserId)
 
+const goToService = (id) => router.push(`/service/${id}`)
+
+// --- COMPUTED ---
 const editSelectedCategory = computed(() =>
   serviceCategories.find(cat => cat.category === editService.value?.category)
 )
@@ -242,61 +272,52 @@ const isEditFormValid = computed(() =>
   editService.value.category &&
   editService.value.city &&
   editService.value.priceType &&
+  editService.value.mode &&
   (editService.value.category !== 'ostalo' || editService.value.customService) &&
   (!editShowPriceInput.value || (editService.value.price !== null && editService.value.price >= 0))
 )
-
 const getServiceName = s => s.subcategory || s.customService || s.category || 'Nepoznato'
 const formatPriceType = type => type === 'dogovor' ? 'Po dogovoru' : type === 'sat' ? 'Na sat' : 'Na dan'
 
 // --- FETCH SERVICES ---
 const fetchServices = async () => {
-    loading.value = true
-
   if (!effectiveUserId.value) return
+  loading.value = true
   try {
     const res = await api.get(`/services/user/${effectiveUserId.value}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     services.value = res.data
     filteredServices.value = [...res.data]
-    console.log("Fetched services:", services.value)
   } catch (err) {
     console.error('❌ Greška kod dohvata usluga:', err.response?.data || err)
-  }
-  finally {
+  } finally {
     loading.value = false
   }
 }
-
-// --- WATCH EFFECTIVE USER ID ---
-watch(effectiveUserId, async () => {
-  await fetchServices()
-})
+watch(effectiveUserId, async () => await fetchServices())
 
 // --- MODALS ---
 let editModalInstance = null
 let deleteModalInstance = null
-
-onMounted(async () => {
-  await fetchServices()
+onMounted(() => {
   editModalInstance = new Modal(document.getElementById('editModal'))
   deleteModalInstance = new Modal(document.getElementById('deleteModal'))
+  fetchServices()
 })
 
-// --- EDIT & DELETE HANDLERS ---
+// --- EDIT & DELETE ---
 const openEditModal = service => {
-  editService.value = { ...service }
+  editService.value = { ...service, images: [...(service.images || [])] }
+  newFiles.value = []
   editModalInstance?.show()
 }
 const closeEditModal = () => editModalInstance?.hide()
-
 const openDeleteModal = service => {
   deleteServiceId.value = service._id
   deleteModalInstance?.show()
 }
 const closeDeleteModal = () => deleteModalInstance?.hide()
-
 const confirmDelete = async () => {
   if (!deleteServiceId.value) return
   try {
@@ -311,7 +332,7 @@ const confirmDelete = async () => {
   }
 }
 
-// --- EVENT HANDLERS ---
+// --- EDIT FORM HANDLERS ---
 const onEditCategoryChange = () => {
   editService.value.subcategory = ''
   editService.value.customService = ''
@@ -320,22 +341,71 @@ const onEditPriceTypeChange = () => {
   if (editService.value.priceType === 'dogovor') editService.value.price = null
 }
 
+// --- FILES HANDLER ---
+const handleFileChange = (event) => {
+  const files = Array.from(event.target.files);
+  newFiles.value.push(...files); // dodaje sve nove fajlove
+};
+
+// Remove image from backend
+const removeImage = async (idx) => {
+  try {
+    await api.put(`/services/${editService.value._id}`, {
+      removeImages: [idx]
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    // update frontend state
+    editService.value.images.splice(idx, 1);
+    if (editService.value.mainImg === idx) editService.value.mainImg = editService.value.images.length ? 0 : null;
+  } catch (err) {
+    console.error('❌ Greška kod brisanja slike:', err.response?.data || err);
+  }
+};
+
+
+// Set main image
+const setMainImage = (idx) => editService.value.mainImg = idx
+
 // --- SAVE EDIT ---
 const saveEdit = async () => {
   try {
-    const res = await api.put(`/services/${editService.value._id}`, editService.value, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    const index = services.value.findIndex(s => s._id === editService.value._id)
-    if (index !== -1) {
-      services.value[index] = res.data
-      filteredServices.value = [...services.value]
+    const formData = new FormData();
+
+    // osnovni podaci
+    for (const key of ['category','subcategory','customService','priceType','price','description','city','mode']) {
+      if(editService.value[key] !== undefined && editService.value[key] !== null)
+        formData.append(key, editService.value[key]);
     }
-    closeEditModal()
+    formData.append('mainImg', editService.value.mainImg ?? 0);
+
+    // dodavanje novih slika
+    if (newFiles.value.length > 0) {
+      newFiles.value.forEach(file => formData.append('images', file));
+    }
+
+    const res = await api.put(`/services/${editService.value._id}`, formData, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+
+   
+    const index = services.value.findIndex(s => s._id === editService.value._id);
+    if (index !== -1) {
+      services.value[index] = res.data;
+      filteredServices.value = [...services.value];
+    }
+
+    closeEditModal();
+    newFiles.value = [];
+
   } catch (err) {
-    console.error('❌ Greška kod spremanja:', err.response?.data || err)
+    console.error('❌ Greška kod spremanja:', err.response?.data || err);
   }
-}
+};
+
+
+
+
 
 defineExpose({ fetchServices })
 </script>
@@ -346,6 +416,8 @@ defineExpose({ fetchServices })
 .modal-lg { max-width: 800px; }
 .form-label { font-weight: 500; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.add-service { background: rgb(91, 119, 168); color: white; border: 1px solid rgb(91, 119, 168); border-radius: 10px; padding: 5px 10px; }
+.main-img-wrapper { border-radius:5px; overflow:hidden; }
+.main-img-wrapper img { cursor:pointer; }
+.border-primary { border-color: #0d6efd !important; }
 @media (max-width: 576px) { .services { padding: 1rem; } .modal-dialog { margin: 0.5rem; } }
 </style>
