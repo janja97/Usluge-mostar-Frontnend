@@ -19,11 +19,20 @@
           >
             <div @click="goToService(s._id)" style="cursor:pointer; display:flex; align-items:center; gap:1rem;">
               <!-- MAIN IMAGE -->
-              <div class="main-img-wrapper" style="width:100px; height:100px; background:#eee; display:flex; align-items:center; justify-content:center;">
+              <div
+                class="main-img-wrapper"
+                style="width:100px; height:100px; background:#eee; display:flex; align-items:center; justify-content:center;"
+              >
                 <img
                   v-if="s.images && s.images.length > 0 && s.mainImg !== undefined"
                   :src="'data:image/jpeg;base64,' + s.images[s.mainImg]"
                   alt="Main"
+                  style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
+                />
+                <img
+                  v-else
+                  :src="getFallbackImage(s.category)"
+                  alt="Default"
                   style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
                 />
               </div>
@@ -191,13 +200,25 @@
                 <label class="form-label">Galerija slika</label>
                 <input type="file" multiple @change="handleFileChange" class="form-control" />
                 <div class="d-flex gap-2 mt-2 flex-wrap">
-                  <div v-for="(img, idx) in editService.images" :key="idx" style="width:80px; height:80px; background:#eee; display:flex; align-items:center; justify-content:center; position:relative; border: solid 2px" :class="{'border-primary':editService.mainImg===idx}">
-                    <img :src="'data:image/jpeg;base64,' + img" style="width:100%; height:100%; object-fit:cover; border-radius:5px;" @click="setMainImage(idx)" />
-                    <button type="button" @click="removeImage(idx)" style="position:absolute; top:0; right:0; background:red; color:white; border:none; border-radius:50%;">×</button>
+                  <div
+                    v-for="(img, idx) in editService.images"
+                    :key="idx"
+                    style="width:80px; height:80px; background:#eee; display:flex; align-items:center; justify-content:center; position:relative; border: solid 2px"
+                    :class="{'border-primary':editService.mainImg===idx}"
+                  >
+                    <img
+                      :src="'data:image/jpeg;base64,' + img"
+                      style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
+                      @click="setMainImage(idx)"
+                    />
+                    <button
+                      type="button"
+                      @click="removeImage(idx)"
+                      style="position:absolute; top:0; right:0; background:red; color:white; border:none; border-radius:50%;"
+                    >×</button>
                   </div>
                 </div>
               </div>
-
             </div>
 
             <div class="modal-footer">
@@ -250,7 +271,6 @@ const newFiles = ref([])
 const deleteServiceId = ref(null)
 const loading = ref(true)
 
-
 const loggedInUserId = localStorage.getItem('userId') || null
 const effectiveUserId = computed(() => props.userId || loggedInUserId)
 
@@ -278,6 +298,12 @@ const isEditFormValid = computed(() =>
 )
 const getServiceName = s => s.subcategory || s.customService || s.category || 'Nepoznato'
 const formatPriceType = type => type === 'dogovor' ? 'Po dogovoru' : type === 'sat' ? 'Na sat' : 'Na dan'
+
+// --- FALLBACK SLIKA ---
+const getFallbackImage = (category) => {
+  const cat = serviceCategories.find(c => c.category === category)
+  return cat?.image || '/img/default.png'
+}
 
 // --- FETCH SERVICES ---
 const fetchServices = async () => {
@@ -343,69 +369,56 @@ const onEditPriceTypeChange = () => {
 
 // --- FILES HANDLER ---
 const handleFileChange = (event) => {
-  const files = Array.from(event.target.files);
-  newFiles.value.push(...files); // dodaje sve nove fajlove
-};
+  const files = Array.from(event.target.files)
+  newFiles.value.push(...files)
+}
 
-// Remove image from backend
 const removeImage = async (idx) => {
   try {
     await api.put(`/services/${editService.value._id}`, {
       removeImages: [idx]
     }, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    });
-    // update frontend state
-    editService.value.images.splice(idx, 1);
-    if (editService.value.mainImg === idx) editService.value.mainImg = editService.value.images.length ? 0 : null;
+    })
+    editService.value.images.splice(idx, 1)
+    if (editService.value.mainImg === idx) editService.value.mainImg = editService.value.images.length ? 0 : null
   } catch (err) {
-    console.error('❌ Greška kod brisanja slike:', err.response?.data || err);
+    console.error('❌ Greška kod brisanja slike:', err.response?.data || err)
   }
-};
+}
 
-
-// Set main image
 const setMainImage = (idx) => editService.value.mainImg = idx
 
 // --- SAVE EDIT ---
 const saveEdit = async () => {
   try {
-    const formData = new FormData();
-
-    // osnovni podaci
+    const formData = new FormData()
     for (const key of ['category','subcategory','customService','priceType','price','description','city','mode']) {
       if(editService.value[key] !== undefined && editService.value[key] !== null)
-        formData.append(key, editService.value[key]);
+        formData.append(key, editService.value[key])
     }
-    formData.append('mainImg', editService.value.mainImg ?? 0);
-
-    // dodavanje novih slika
+    formData.append('mainImg', editService.value.mainImg ?? 0)
     if (newFiles.value.length > 0) {
-      newFiles.value.forEach(file => formData.append('images', file));
+      newFiles.value.forEach(file => formData.append('images', file))
     }
 
     const res = await api.put(`/services/${editService.value._id}`, formData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    });
+    })
 
-   
-    const index = services.value.findIndex(s => s._id === editService.value._id);
+    const index = services.value.findIndex(s => s._id === editService.value._id)
     if (index !== -1) {
-      services.value[index] = res.data;
-      filteredServices.value = [...services.value];
+      services.value[index] = res.data
+      filteredServices.value = [...services.value]
     }
 
-    closeEditModal();
-    newFiles.value = [];
+    closeEditModal()
+    newFiles.value = []
 
   } catch (err) {
-    console.error('❌ Greška kod spremanja:', err.response?.data || err);
+    console.error('❌ Greška kod spremanja:', err.response?.data || err)
   }
-};
-
-
-
-
+}
 
 defineExpose({ fetchServices })
 </script>

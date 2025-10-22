@@ -9,23 +9,21 @@
 
     <!-- Service Content -->
     <div v-else-if="service" class="service-container">
-
-      <!-- Slider glavnih slika -->
       <div class="image-slider">
-        <button v-if="service.images && service.images.length > 1" class="arrow left" @click="prevImage">&#10094;</button>
+        <button v-if="displayedImages.length > 1" class="arrow left" @click="prevImage">&#10094;</button>
         <img
-          v-if="service.images && service.images.length > 0"
-          :src="`data:image/jpeg;base64,${service.images[currentImageIndex]}`"
+          v-if="displayedImages.length > 0"
+          :src="displayedImages[currentImageIndex]"
           alt="Slika usluge"
           class="service-image"
         />
         <div v-else class="service-placeholder">
           <span>Bez slike</span>
         </div>
-        <button v-if="service.images && service.images.length > 1" class="arrow right" @click="nextImage">&#10095;</button>
+        <button v-if="displayedImages.length > 1" class="arrow right" @click="nextImage">&#10095;</button>
 
         <i
-          :class="[ 'bi', isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart', 'favorite-icon' ]"
+          :class="['bi', isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart', 'favorite-icon']"
           @click="toggleFavorite"
           title="Dodaj u omiljene"
         ></i>
@@ -86,9 +84,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../services/api";
+import categoriesData from "../data/services.json";
 
 const route = useRoute();
 const router = useRouter();
@@ -97,6 +96,21 @@ const loading = ref(true);
 const isFavorite = ref(false);
 const loggedUserId = localStorage.getItem("userId");
 const currentImageIndex = ref(0);
+
+const displayedImages = computed(() => {
+  if (service.value?.images?.length) {
+    return service.value.images.map((img) => `data:image/jpeg;base64,${img}`);
+  }
+
+  const categoryItem = categoriesData.find(
+    (cat) =>
+      cat.category.toLowerCase() === service.value?.category?.toLowerCase()
+  );
+
+  return categoryItem && categoryItem.image
+    ? [categoryItem.image]
+    : ["/img/home/placeholder.png"];
+});
 
 onMounted(async () => {
   await fetchService();
@@ -160,15 +174,18 @@ const formatPriceType = (priceType) => {
 };
 
 const nextImage = () => {
-  if (!service.value || !service.value.images) return;
-  currentImageIndex.value = (currentImageIndex.value + 1) % service.value.images.length;
+  if (!displayedImages.value.length) return;
+  currentImageIndex.value =
+    (currentImageIndex.value + 1) % displayedImages.value.length;
 };
 const prevImage = () => {
-  if (!service.value || !service.value.images) return;
+  if (!displayedImages.value.length) return;
   currentImageIndex.value =
-    (currentImageIndex.value - 1 + service.value.images.length) % service.value.images.length;
+    (currentImageIndex.value - 1 + displayedImages.value.length) %
+    displayedImages.value.length;
 };
 </script>
+
 <style scoped>
 .service-container {
   display: flex;

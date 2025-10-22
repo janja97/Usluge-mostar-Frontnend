@@ -1,6 +1,9 @@
 [
   {
     "category": "ciscenje",
+    "icon": "/img/icons/clean.svg",
+    "image": "/img/home/cleaning.png",
+    "color": "#3b82f6",
     "subcategories": [
       "dvorista",
       "kuce",
@@ -15,6 +18,10 @@
   },
   {
     "category": "odrzavanje",
+    "icon": "/img/icons/repair.svg",
+    "image": "/img/home/electricity.png",
+
+    "color": "#22c55e",
     "subcategories": [
       "elektricar",
       "vodoinstalater",
@@ -29,6 +36,9 @@
   },
   {
     "category": "briga i pomoc",
+    "icon": "/img/icons/service-animal-1.svg",
+     "image": "/img/home/oldmen.png",
+    "color": "#8b5cf6",
     "subcategories": [
       "cuvanje djece",
       "njege starih i nepokretnih osoba",
@@ -39,6 +49,9 @@
   },
   {
     "category": "instrukcije",
+    "icon": "/img/icons/online-learning-01.svg",
+    "image": "/img/home/teacher.png",
+    "color": "#14b8a6",
     "subcategories": [
       "matematika osnovna",
       "matematika srednja",
@@ -61,6 +74,9 @@
   },
   {
     "category": "transport i dostava",
+    "icon": "/img/icons/transportation-outline-rounded.svg",
+    "image": "/img/home/transport.png",
+    "color": "#facc15",
     "subcategories": [
       "vozac",
       "kurir",
@@ -71,6 +87,9 @@
   },
   {
     "category": "it i tehnologija",
+    "icon": "/img/icons/laptop-dev-mode.svg",
+    "image": "/img/home/tehnogogy.png",
+    "color": "#3b82f6",
     "subcategories": [
       "popravka racunara",
       "instalacija softvera",
@@ -82,6 +101,9 @@
   },
   {
     "category": "kreativne usluge",
+    "icon": "/img/icons/photo-camera-outline.svg",
+    "image": "/img/home/designing.png",
+    "color": "#ec4899",
     "subcategories": [
       "fotografija",
       "video snimaanje",
@@ -94,6 +116,9 @@
   },
   {
     "category": "ostalo",
+    "icon": "/img/icons/fr.svg",
+    "image": "/img/home/female.png",
+    "color": "#22c55e",
     "subcategories": []
   }
 ]

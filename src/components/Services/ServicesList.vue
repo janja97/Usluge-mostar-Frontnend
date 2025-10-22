@@ -6,11 +6,10 @@
       class="service-row d-flex align-items-center mb-3 p-3 border rounded"
       @click="goToService(service._id)"
     >
-      
       <div class="service-image-wrapper me-3">
         <img 
-          v-if="service.images && service.images.length"
-          :src="'data:image/jpeg;base64,' + service.images[0]"
+          v-if="getServiceImage(service)"
+          :src="getServiceImage(service)"
           alt="Service image"
           class="service-image"
         />
@@ -26,7 +25,6 @@
         <p class="mb-0">{{ truncateDescription(service.description) }}</p>
       </div>
 
-      
       <button 
         v-if="isLoggedIn" 
         class="btn-favorite ms-3" 
@@ -42,6 +40,7 @@
 import { defineProps, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../store/user'
+import categoriesData from '../../data/services.json' 
 
 const props = defineProps({
   services: Array,
@@ -66,6 +65,17 @@ const truncateDescription = (desc) => {
   if (!desc) return ''
   return desc.length > 50 ? desc.substring(0, 50) + '...' : desc
 }
+
+const getServiceImage = (service) => {
+  if (service.images && service.images.length) {
+    return 'data:image/jpeg;base64,' + service.images[0]
+  }
+
+  const category = categoriesData.find(
+    (cat) => cat.category.toLowerCase() === service.category.toLowerCase()
+  )
+  return category ? category.image : null
+}
 </script>
 
 <style scoped>
@@ -79,7 +89,6 @@ const truncateDescription = (desc) => {
 .service-row:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
 
 .service-image-wrapper {
   width: 100px;

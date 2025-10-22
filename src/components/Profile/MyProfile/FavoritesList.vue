@@ -11,15 +11,13 @@
         style="cursor: pointer;"
       >
         <div class="d-flex align-items-center gap-3">
-          <!-- ✅ Service image or placeholder -->
+          <!-- ✅ Service image or category fallback -->
           <div class="image-wrapper">
             <img
-              v-if="fav.images && fav.images.length"
-              :src="'data:image/jpeg;base64,' + fav.images[0]"
+              :src="getServiceImage(fav)"
               alt="Service image"
               class="service-image"
             />
-            <div v-else class="service-placeholder"></div>
           </div>
 
           <!-- ✅ Text details -->
@@ -28,9 +26,9 @@
             <span class="service-category">{{ formatCategory(fav.category) }}</span>
             <span v-if="fav.subcategory"> | {{ formatCategory(fav.subcategory) }}</span><br>
             <span class="service-price">
-              {{ fav.price ? fav.price + ' KM' : 'Negotiable' }}
-              <span v-if="fav.priceType === 'sat'">/hour</span>
-              <span v-else-if="fav.priceType === 'dnevno'">/day</span>
+              {{ fav.price ? fav.price + ' KM' : 'Po dogovoru' }}
+              <span v-if="fav.priceType === 'sat'">/sat</span>
+              <span v-else-if="fav.priceType === 'dnevno'">/dan</span>
             </span>
           </div>
         </div>
@@ -42,7 +40,7 @@
       </div>
     </div>
 
-    <p v-else class="text-muted">You currently have no favorite listings.</p>
+    <p v-else class="text-muted">Trenutno nemaš omiljene usluge.</p>
   </div>
 </template>
 
@@ -50,6 +48,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../../services/api";
+import categoriesData from "../../../data/services.json";
 
 const favorites = ref([]);
 const router = useRouter();
@@ -59,11 +58,20 @@ const goToService = (id) => {
 };
 
 const getServiceName = (fav) => {
-  return fav.subcategory || fav.customService || fav.category || "Unknown";
+  return fav.subcategory || fav.customService || fav.category || "Nepoznata usluga";
 };
 
 const formatCategory = (cat) => {
   return cat ? cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '';
+};
+
+const getServiceImage = (fav) => {
+  if (fav.images && fav.images.length) {
+    return `data:image/jpeg;base64,${fav.images[0]}`;
+  }
+
+  const category = categoriesData.find(c => c.category === fav.category);
+  return category ? category.image : "/img/home/default.png";
 };
 
 onMounted(async () => {
@@ -77,7 +85,7 @@ const loadFavorites = async () => {
     });
     favorites.value = res.data;
   } catch (err) {
-    console.error("❌ Error fetching favorites:", err.response?.data || err);
+    console.error("❌ Greška kod učitavanja favorita:", err.response?.data || err);
   }
 };
 
@@ -88,7 +96,7 @@ const toggleFavorite = async (serviceId) => {
     });
     favorites.value = favorites.value.filter(f => f._id !== serviceId);
   } catch (err) {
-    console.error("❌ Error removing favorite:", err.response?.data || err);
+    console.error("❌ Greška kod uklanjanja favorita:", err.response?.data || err);
   }
 };
 </script>
@@ -133,7 +141,6 @@ const toggleFavorite = async (serviceId) => {
   transform: scale(1.2);
 }
 
-/* ✅ Stilovi za sliku i placeholder */
 .image-wrapper {
   width: 70px;
   height: 70px;
@@ -148,7 +155,6 @@ const toggleFavorite = async (serviceId) => {
   border: 1px solid #ddd;
 }
 
-/* ✅ Sivi placeholder ako nema slike */
 .service-placeholder {
   width: 100%;
   height: 100%;
