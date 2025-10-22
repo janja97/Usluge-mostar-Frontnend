@@ -13,7 +13,7 @@
 
       <div class="services-grid" v-else>
         <div class="service-card" v-for="(s, index) in featuredServices" :key="index">
-          <!-- ✅ Display image or gray placeholder -->
+          <!-- ✅ Display image from DB or fallback from JSON -->
           <div class="card-image-wrapper">
             <img
               v-if="s.images && s.images.length > 0"
@@ -21,14 +21,19 @@
               alt="Service"
               class="card-image"
             />
-            <div v-else class="card-placeholder"></div>
+            <img
+              v-else
+              :src="getCategoryImage(s.category)"
+              alt="Default category image"
+              class="card-image"
+            />
           </div>
 
           <div class="card-content">
             <h5 class="card-title">
               {{ s.subcategory || s.category || s.customService || 'Unknown Service' }}
             </h5>
-            <p class="card-user">{{ s.user.fullName }}</p>
+            <p class="card-user">{{ s.user?.fullName || 'Unknown User' }}</p>
             <p class="card-service">{{ s.service === 'ostalo' ? s.customService : s.service }}</p>
             <p class="card-price">
               Price:
@@ -50,7 +55,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
 </template>
@@ -58,16 +62,25 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../../services/api';
+import servicesData from '../../data/services.json'; 
 
 const services = ref([]);
 const featuredServices = ref([]);
 
-// Load all services
+// ✅ helper: get default category image
+const getCategoryImage = (category) => {
+  const found = servicesData.find(
+    (item) => item.category.toLowerCase() === category?.toLowerCase()
+  );
+  return found ? found.image : '/img/home/female.png'; // fallback ako nema kategorije
+};
+
+// Load services
 const loadServices = async () => {
   try {
     const res = await api.get('/services');
     services.value = res.data;
-    featuredServices.value = res.data.slice(0, 8); // Get first 8 featured
+    featuredServices.value = res.data.slice(0, 8);
   } catch (err) {
     console.error('Error fetching services:', err);
   }
@@ -120,7 +133,6 @@ onMounted(loadServices);
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
-/* ✅ Added for image display or gray div */
 .card-image-wrapper {
   width: 100%;
   height: 180px;
