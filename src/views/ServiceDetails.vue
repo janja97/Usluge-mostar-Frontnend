@@ -93,10 +93,12 @@ const route = useRoute();
 const router = useRouter();
 const service = ref(null);
 const loading = ref(true);
+const favorites = ref([]);
 const isFavorite = ref(false);
 const loggedUserId = localStorage.getItem("userId");
 const currentImageIndex = ref(0);
 
+// Displayed images logic
 const displayedImages = computed(() => {
   if (service.value?.images?.length) {
     return service.value.images.map((img) => `data:image/jpeg;base64,${img}`);
@@ -117,6 +119,7 @@ onMounted(async () => {
   await fetchFavorites();
 });
 
+// Fetch selected service details
 const fetchService = async () => {
   try {
     const res = await api.get(`/services/${route.params.id}`, {
@@ -124,32 +127,46 @@ const fetchService = async () => {
     });
     service.value = res.data;
   } catch (err) {
-    console.error("❌ Greška kod dohvaćanja servisa:", err);
+    console.error("❌ Error fetching service:", err);
   } finally {
     loading.value = false;
   }
 };
 
+// Fetch all favorites and check if current service is among them
 const fetchFavorites = async () => {
   try {
     const res = await api.get("/favorites", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
-    const favIds = Array.isArray(res.data.favorites)
-      ? res.data.favorites.map(String)
-      : [];
-    isFavorite.value = favIds.includes(String(route.params.id));
+    favorites.value = res.data;
+    
+    // After fetching favorites, check if current service is marked as favorite
+    checkIfFavorite();
   } catch (err) {
-    console.error("❌ Greška kod provjere favorita:", err);
+    console.error("❌ Error fetching favorites:", err);
   }
 };
 
+// Check if the current service is in the favorites list
+const checkIfFavorite = () => {
+  if (service.value && favorites.value.length) {
+    isFavorite.value = favorites.value.some(
+      (fav) => fav._id === service.value._id
+    );
+  } else {
+    isFavorite.value = false;
+  }
+};
+
+// Open chat with the service owner
 const goToChat = () => {
   if (service.value?.user?._id) {
     router.push(`/messages/${service.value.user._id}`);
   }
 };
 
+// Toggle favorite status
 const toggleFavorite = async () => {
   try {
     await api.post(`/favorites/${route.params.id}`, {}, {
@@ -157,13 +174,16 @@ const toggleFavorite = async () => {
     });
     isFavorite.value = !isFavorite.value;
   } catch (err) {
-    console.error("❌ Greška kod favorita:", err.response?.data || err);
-    alert("Greška pri spremanju omiljenih. Provjeri prijavu ili backend.");
+    console.error("❌ Error toggling favorite:", err.response?.data || err);
+    alert("Error saving favorites. Check login or backend.");
   }
 };
 
+// Format text (category/subcategory names)
 const formatCategory = (text) =>
   text.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
+// Format price type
 const formatPriceType = (priceType) => {
   switch (priceType) {
     case "dogovor": return "Po dogovoru";
@@ -173,11 +193,14 @@ const formatPriceType = (priceType) => {
   }
 };
 
+// Show next image in slider
 const nextImage = () => {
   if (!displayedImages.value.length) return;
   currentImageIndex.value =
     (currentImageIndex.value + 1) % displayedImages.value.length;
 };
+
+// Show previous image in slider
 const prevImage = () => {
   if (!displayedImages.value.length) return;
   currentImageIndex.value =

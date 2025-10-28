@@ -1,5 +1,5 @@
 <template>
-  <div class="services-page container py-5">
+  <div v-if="pageReady" class="services-page container py-5">
     <ServiceFilters 
       :initial-search="searchQuery"
       :initial-category="selectedCategory"
@@ -15,6 +15,11 @@
       @toggle-favorite="toggleFavorite"
     />
   </div>
+
+  <div v-else class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-3">Učitavanje podataka...</p>
+  </div>
 </template>
 
 <script setup>
@@ -28,7 +33,8 @@ const userStore = useUserStore()
 const user = computed(() => userStore.user)
 
 const services = ref([])
-const favorites = ref([])
+const favorites = ref([]) 
+const pageReady = ref(false)
 
 const searchQuery = ref('')
 const selectedCategory = ref(null)
@@ -36,29 +42,37 @@ const minPrice = ref(null)
 const maxPrice = ref(null)
 const priceSort = ref('')
 
-// --- Load all services
+// ------------------- Load all services -------------------
 const loadServices = async () => {
   try {
     const res = await api.get('/services')
     services.value = Array.isArray(res.data) ? res.data : []
   } catch (err) {
-    console.error('Error loading services:', err)
+    console.error('❌ Error loading services:', err)
     services.value = []
   }
 }
 
-// --- Load favorites for logged-in user
+// ------------------- Load favorites for logged-in user -------------------
 const loadFavorites = async () => {
-  if (!user.value) return
   try {
-    const res = await api.get('/favorites') // backend ruta
-    favorites.value = res.data.favorites || []
+    const token = localStorage.getItem('token')
+    if (!token) {
+      favorites.value = []
+      return
+    }
+
+    const res = await api.get('/favorites', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    favorites.value = Array.isArray(res.data) ? res.data : []
   } catch (err) {
-    console.error('Error loading favorites:', err)
+    console.error('❌ Error loading favorites:', err)
+    favorites.value = []
   }
 }
 
-// --- Filter + sort
+// ------------------- Filter + sort (unchanged) -------------------
 const filteredServices = computed(() => {
   let filtered = services.value
 
@@ -79,7 +93,7 @@ const filteredServices = computed(() => {
   return filtered
 })
 
-// --- Update filters from child component
+// ------------------- Update filters -------------------
 const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSort: sort }) => {
   searchQuery.value = search
   selectedCategory.value = category
@@ -88,26 +102,51 @@ const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSor
   priceSort.value = sort
 }
 
-// --- Toggle favorite
+/*
+  toggleFavorite:
+  - optimistic local update so UI reacts immediately
+  - emit API call to update backend
+  - once API responds, reconcile favorites *in-place* (mutating same array object)
+*/
 const toggleFavorite = async (serviceId) => {
   if (!user.value) {
     alert('Morate biti prijavljeni da biste dodali favorite.')
     return
   }
 
+  // ------------------- Optimistic local change -------------------
+  const index = favorites.value.findIndex(fav => fav._id === serviceId)
+  if (index !== -1) {
+    // remove favorite locally
+    favorites.value.splice(index, 1)
+  } else {
+    // add service object locally (find in services list)
+    const service = services.value.find(s => s._id === serviceId)
+    if (service) {
+      favorites.value.push(service)
+    }
+  }
+
+  // ------------------- API call -------------------
   try {
-    const res = await api.post(`/favorites/${serviceId}`) // backend ruta
-    favorites.value = res.data.favorites || []
+    const res = await api.post(`/favorites/${serviceId}`)
+    const updatedFavorites = Array.isArray(res.data.favorites) ? res.data.favorites : []
+
+    // ------------------- Reconcile favorites IN-PLACE to avoid reference replacement -------------------
+    favorites.value.splice(0, favorites.value.length, ...updatedFavorites)
   } catch (err) {
-    console.error('Error toggling favorite:', err)
+    // on error, just log (could also revert optimistic change if desired)
+    console.error('❌ Error updating favorites:', err)
   }
 }
 
-// --- Watch user changes
-watch(user, () => loadFavorites())
+// Watch user changes to reload favorites
+watch(user, () => loadFavorites(), { immediate: true })
 
-onMounted(() => {
-  loadServices()
-  if (user.value) loadFavorites()
+onMounted(async () => {
+  // load favorites and services first
+  await Promise.all([loadFavorites(), loadServices()])
+
+  pageReady.value = true
 })
 </script>
