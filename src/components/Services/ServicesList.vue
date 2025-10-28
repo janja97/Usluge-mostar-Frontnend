@@ -34,14 +34,15 @@
             {{ service.priceType === 'dogovor' ? 'Po dogovoru' : service.price + ' BAM / ' + service.priceType }}
           </p>
           <p class="mb-0">{{ truncateDescription(service.description) }}</p>
+
         </div>
 
         <button 
           v-if="isLoggedIn" 
           class="btn-favorite ms-3" 
-          @click.stop="toggleFavorite(service._id)"
+          @click.stop="onToggleFavorite(service._id)"
         >
-          <i :class="favorites.includes(service._id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
+          <i :class="isFavorite(service._id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
         </button>
       </div>
 
@@ -75,7 +76,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted } from 'vue'
+import { defineProps, defineEmits, ref, computed, onMounted, watch, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../store/user'
 import categoriesData from '../../data/services.json' 
@@ -92,33 +93,77 @@ const isLoggedIn = computed(() => !!userStore.user)
 
 const loading = ref(true)
 
+// ------------------- local reactive map of favorite ids -------------------
+const localFavMap = reactive({}) // { [id]: true }
+const syncLocalFavMap = (favArray) => {
+  // Clear existing keys (mutate in-place)
+  for (const k in localFavMap) {
+    if (Object.prototype.hasOwnProperty.call(localFavMap, k)) delete localFavMap[k]
+  }
+  // Set new keys
+  if (Array.isArray(favArray)) {
+    // favArray may contain objects with _id or may be array of ids.
+    for (const f of favArray) {
+      const id = (f && f._id) ? f._id : f
+      if (id) localFavMap[id] = true
+    }
+  }
+}
+
+// Watch incoming props.favorites and sync into localFavMap (in-place mutation)
+watch(
+  () => props.favorites,
+  (newVal) => {
+    syncLocalFavMap(newVal)
+  },
+  { immediate: true, deep: true }
+)
+
+// ------------------- pagination + helpers (unchanged) -------------------
 const currentPage = ref(1)
 const perPage = 6
-const totalPages = computed(() => Math.ceil(props.services.length / perPage))
+const totalPages = computed(() => Math.ceil((props.services || []).length / perPage))
 const paginatedServices = computed(() => {
   const start = (currentPage.value - 1) * perPage
-  return props.services.slice(start, start + perPage)
+  return (props.services || []).slice(start, start + perPage)
 })
 const goToPage = (page) => {
   currentPage.value = page
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    loading.value = false
-  }, 300)
-})
-
 const goToService = (id) => {
   router.push(`/service/${id}`)
 }
 
-const toggleFavorite = (id) => {
+// ------------------- toggle favorite flow in child -------------------
+/*
+  onToggleFavorite:
+  - optimistically flip the local state for the single id (no re-creation)
+  - emit to parent to perform backend update & parent optimistic change
+  - parent will update props.favorites, which will trigger the watch above to reconcile localFavMap
+*/
+const onToggleFavorite = (id) => {
   if (!isLoggedIn.value) return
+
+  // Optimistically flip only this id in-place
+  if (localFavMap[id]) {
+    delete localFavMap[id]
+  } else {
+    localFavMap[id] = true
+  }
+
+
+  // emit to parent to actually toggle (parent will call API)
   emit('toggle-favorite', id)
 }
 
+// isFavorite reads localFavMap (fast, local, and in-place)
+const isFavorite = (id) => {
+  return !!localFavMap[id]
+}
+
+// ------------------- other helpers (unchanged) -------------------
 const truncateDescription = (desc) => {
   if (!desc) return ''
   return desc.length > 50 ? desc.substring(0, 50) + '...' : desc
@@ -133,9 +178,14 @@ const getServiceImage = (service) => {
   )
   return category ? category.image : null
 }
+
+onMounted(() => {
+  setTimeout(() => (loading.value = false), 300)
+})
 </script>
 
 <style scoped>
+
 /* Loader */
 .loader-container {
   display: flex;
