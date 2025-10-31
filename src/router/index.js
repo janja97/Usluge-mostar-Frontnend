@@ -34,18 +34,18 @@ const routes = [
     props: true
   },
 
-  {
-    path: '/messenges',
-    name: 'Messenger',
-    component: () => import('../views/MessagerPage.vue'),
-    meta: { requiresAuth: true },
-  },
+  // {
+  //   path: '/messenges',
+  //   name: 'Messenger',
+  //   component: () => import('../views/MessagerPage.vue'),
+  //   meta: { requiresAuth: true },
+  // },
   
-  {
-    path: '/messages/:userId?',
-    name: 'Messenger',
-    component: () => import('../views/MessagerPage.vue')
-  },
+  // {
+  //   path: '/messages/:userId?',
+  //   name: 'Messenger',
+  //   component: () => import('../views/MessagerPage.vue')
+  // },
 
   // catch-all
   {
