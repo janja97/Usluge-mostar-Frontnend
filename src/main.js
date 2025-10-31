@@ -26,6 +26,7 @@ axios.interceptors.request.use(config => {
 
 const app = createApp(App);
 app.use(createPinia());
+app.config.compilerOptions.isCustomElement = (tag) => ['emoji-picker'].includes(tag)
 
 app.use(router);
 app.mount('#app');

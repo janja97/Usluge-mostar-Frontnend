@@ -1,19 +1,18 @@
 <template>
   <nav class="custom-navbar">
     <div class="container">
-      <!-- Logo -->
       <router-link class="logo" to="/">MyLogo</router-link>
 
-      <!-- Desktop links -->
       <ul class="nav-links">
         <li v-for="route in leftRoutes" :key="route.name">
           <router-link :to="route.path" class="nav-link">
             {{ route.name }}
+            <!-- 🔴 Crveni krug za Messenger -->
+            <span v-if="route.name === 'Messenger' && unreadCount > 0" class="unread-dot"></span>
           </router-link>
         </li>
       </ul>
 
-      <!-- Auth buttons -->
       <div class="auth-buttons">
         <template v-if="user">
           <span class="user-name">{{ user.fullName }}</span>
@@ -25,18 +24,15 @@
         </template>
       </div>
 
-      <!-- Mobile menu button -->
-      <button class="mobile-toggle" @click="menuOpen = !menuOpen">
-        ☰
-      </button>
+      <button class="mobile-toggle" @click="menuOpen = !menuOpen">☰</button>
     </div>
 
-    <!-- Mobile menu -->
     <div v-if="menuOpen" class="mobile-menu">
       <ul>
         <li v-for="route in leftRoutes" :key="route.name">
           <router-link :to="route.path" class="nav-link">
             {{ route.name }}
+            <span v-if="route.name === 'Messenger' && unreadCount > 0" class="unread-dot"></span>
           </router-link>
         </li>
       </ul>
@@ -55,24 +51,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
+import api from '../services/api';
 
-const props = defineProps({
-  user: Object
-});
-
+const props = defineProps({ user: Object });
 const emit = defineEmits(['logout']);
 const router = useRouter();
 const menuOpen = ref(false);
+const unreadCount = ref(0);
 
 const leftRoutes = [
   { path: '/', name: 'Home' },
   { path: '/profile', name: 'Profile' },
   { path: '/services', name: 'Services' },
-  { path: '/messages', name: 'Messenger' }
-
+  // { path: '/messages', name: 'Messenger' }
 ];
 
 function logout() {
@@ -80,7 +74,30 @@ function logout() {
   emit('logout');
   router.push('/login');
 }
+
+// ---------------- Pollanje nepročitanih poruka ----------------
+let intervalId = null;
+
+async function fetchUnread() {
+  if (!props.user) return;
+  try {
+    const res = await api.get('/messages/unread-count');
+    unreadCount.value = res.data.unreadCount;
+  } catch (err) {
+    console.error('Error fetching unread messages:', err);
+  }
+}
+
+onMounted(() => {
+  fetchUnread();
+  intervalId = setInterval(fetchUnread, 60000); // svake 1 minute
+});
+
+onBeforeUnmount(() => {
+  clearInterval(intervalId);
+});
 </script>
+
 
 <style scoped>
 /* Glavni container */
@@ -206,6 +223,16 @@ function logout() {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.unread-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
 }
 
 @media (max-width: 992px) {

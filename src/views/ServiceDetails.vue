@@ -61,13 +61,13 @@
           </div>
 
           <div class="buttons">
-            <button
+            <!-- <button
               v-if="service.user && service.user._id !== loggedUserId"
               class="btn btn-outline-primary me-2"
               @click="goToChat"
             >
               💬 Pošalji poruku
-            </button>
+            </button> -->
             <router-link to="/" class="btn btn-outline-secondary">
               ← Povratak
             </router-link>
@@ -162,7 +162,10 @@ const checkIfFavorite = () => {
 // Open chat with the service owner
 const goToChat = () => {
   if (service.value?.user?._id) {
-    router.push(`/messages/${service.value.user._id}`);
+    router.push({
+      path: '/messages',
+      query: { userId: service.value.user._id }
+    });
   }
 };
 
@@ -207,6 +210,8 @@ const prevImage = () => {
     (currentImageIndex.value - 1 + displayedImages.value.length) %
     displayedImages.value.length;
 };
+
+
 </script>
 
 <style scoped>
