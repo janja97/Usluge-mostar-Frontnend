@@ -130,16 +130,33 @@
                 />
               </div>
 
-              <!-- City -->
+              <!-- ŽUPANIJA / REGIJA -->
               <div class="col-md-6 mb-3">
+                <label class="form-label">Županija / Regija *</label>
+                <select v-model="editService.county" class="form-select" required @change="onEditCountyChange">
+                  <option value="">Odaberi županiju / regiju</option>
+                  <option v-for="(cities, countyName) in countiesAndCities" :key="countyName" :value="countyName">
+                    {{ countyName }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- GRAD -->
+              <div class="col-md-6 mb-3" v-if="editService.county">
                 <label class="form-label">Grad *</label>
-                <input
-                  v-model="editService.city"
-                  type="text"
-                  class="form-control"
-                  placeholder="Npr. Mostar"
-                  required
-                />
+                <select v-model="editService.city" class="form-select" required>
+                  <option value="">Odaberi grad</option>
+                  <option v-for="cityName in editCityOptions" :key="cityName" :value="cityName">
+                    {{ cityName }}
+                  </option>
+                  <option value="custom">Drugi (unesi ručno)</option>
+                </select>
+              </div>
+
+              <!-- CUSTOM GRAD -->
+              <div class="col-md-6 mb-3" v-if="editService.city === 'custom'">
+                <label class="form-label">Unesite grad *</label>
+                <input v-model="editCustomCity" type="text" class="form-control" placeholder="Unesite grad" required />
               </div>
 
               <!-- Price Type -->
@@ -230,6 +247,7 @@
       </div>
     </div>
 
+
     <!-- DELETE MODAL -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -254,6 +272,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../../../services/api'
 import serviceCategories from '../../../data/services.json'
+import countiesAndCities from '../../../data/city.json'
 import { Modal } from 'bootstrap'
 
 // --- PROPS ---
@@ -273,7 +292,8 @@ const loading = ref(true)
 
 const loggedInUserId = localStorage.getItem('userId') || null
 const effectiveUserId = computed(() => props.userId || loggedInUserId)
-
+const editCityOptions = ref([])
+const editCustomCity = ref('')
 const goToService = (id) => router.push(`/service/${id}`)
 
 // --- COMPUTED ---
@@ -296,6 +316,11 @@ const isEditFormValid = computed(() =>
   (editService.value.category !== 'ostalo' || editService.value.customService) &&
   (!editShowPriceInput.value || (editService.value.price !== null && editService.value.price >= 0))
 )
+const onEditCountyChange = () => {
+  editService.value.city = ''
+  const cities = countiesAndCities[editService.value.county]
+  editCityOptions.value = Array.isArray(cities) ? cities : []
+}
 const getServiceName = s => s.subcategory || s.customService || s.category || 'Nepoznato'
 const formatPriceType = type => type === 'dogovor' ? 'Po dogovoru' : type === 'sat' ? 'Na sat' : 'Na dan'
 
@@ -393,10 +418,15 @@ const setMainImage = (idx) => editService.value.mainImg = idx
 const saveEdit = async () => {
   try {
     const formData = new FormData()
-    for (const key of ['category','subcategory','customService','priceType','price','description','city','mode']) {
+    for (const key of ['category','subcategory','customService','priceType','price','description','mode','county']) {
       if(editService.value[key] !== undefined && editService.value[key] !== null)
         formData.append(key, editService.value[key])
     }
+    // grad
+    formData.append(
+      'city',
+      editService.value.city === 'custom' ? editCustomCity.value : editService.value.city
+    )
     formData.append('mainImg', editService.value.mainImg ?? 0)
     if (newFiles.value.length > 0) {
       newFiles.value.forEach(file => formData.append('images', file))

@@ -1,0 +1,22 @@
+{
+  "Unsko-sanska županija": ["Bihać", "Cazin", "Velika Kladuša", "Bosanska Krupa", "Sanski Most", "Bužim", "Ključ", "Bosanski Petrovac"],
+  "Posavska županija": ["Orašje", "Domaljevac-Šamac", "Odžak"],
+  "Tuzlanska županija": ["Tuzla", "Živinice", "Lukavac", "Gračanica", "Srebrenik", "Gradačac", "Kalesija", "Banovići"],
+  "Zeničko-dobojska županija": ["Zenica", "Visoko", "Kakanj", "Tešanj", "Maglaj", "Žepče", "Breza", "Doboj Jug"],
+  "Bosansko-podrinjska županija": ["Goražde", "Ustikolina", "Prača"],
+  "Srednjobosanska županija": ["Travnik", "Vitez", "Novi Travnik", "Bugojno", "Jajce", "Donji Vakuf", "Kiseljak", "Fojnica", "Gornji Vakuf-Uskoplje"],
+  "Hercegovačko-neretvanska županija": ["Mostar", "Čitluk", "Čapljina", "Jablanica", "Konjic", "Stolac", "Neum", "Ravno"],
+  "Zapadnohercegovačka županija": ["Široki Brijeg", "Ljubuški", "Grude", "Posušje"],
+  "Hercegbosanska županija": ["Livno", "Tomislavgrad", "Kupres", "Drvar", "Bosansko Grahovo", "Glamoč"],
+  "Sarajevska županija": ["Sarajevo", "Ilidža", "Vogošća", "Hadžići", "Ilijaš", "Trnovo"],
+
+  "Banjalučka regija": ["Banja Luka", "Prijedor", "Gradiška", "Kozarska Dubica", "Lak­taši", "Srbac"],
+  "Dobojska regija": ["Doboj", "Modriča", "Teslić", "Derventa", "Brod"],
+  "Bijeljinska regija": ["Bijeljina", "Ugljevik", "Lopare"],
+  "Trebinjska regija": ["Trebinje", "Bileća", "Nevesinje", "Gacko"],
+  "Sarajevsko-romanijska regija": ["Pale", "Istočno Sarajevo", "Sokolac", "Han Pijesak"],
+  "Hercegovačka regija (RS)": ["Foča", "Čajniče", "Rogatica"],
+  "Krajina (RS)": ["Novi Grad", "Kostajnica", "Krupa na Uni"],
+
+  "Brčko distrikt": ["Brčko"]
+}

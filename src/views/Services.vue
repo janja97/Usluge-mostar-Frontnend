@@ -42,6 +42,10 @@ const minPrice = ref(null)
 const maxPrice = ref(null)
 const priceSort = ref('')
 
+// NOVO: county i city
+const selectedCounty = ref('')
+const selectedCity = ref('')
+
 // ------------------- Load all services -------------------
 const loadServices = async () => {
   try {
@@ -53,7 +57,7 @@ const loadServices = async () => {
   }
 }
 
-// ------------------- Load favorites for logged-in user -------------------
+// ------------------- Load favorites -------------------
 const loadFavorites = async () => {
   try {
     const token = localStorage.getItem('token')
@@ -72,9 +76,11 @@ const loadFavorites = async () => {
   }
 }
 
-// ------------------- Filter + sort (unchanged) -------------------
+// ------------------- Filter + sort -------------------
 const filteredServices = computed(() => {
   let filtered = services.value
+
+  const cityValue = selectedCity.value === 'custom' ? selectedCity.value : selectedCity.value
 
   if (searchQuery.value)
     filtered = filtered.filter(s =>
@@ -90,63 +96,61 @@ const filteredServices = computed(() => {
   if (priceSort.value === 'asc') filtered = filtered.slice().sort((a, b) => a.price - b.price)
   else if (priceSort.value === 'desc') filtered = filtered.slice().sort((a, b) => b.price - a.price)
 
+  // ------------------- Filtriranje po županiji i gradu -------------------
+  if (selectedCounty.value) {
+    filtered = filtered.filter(s => s.county === selectedCounty.value)
+  }
+
+  if (selectedCity.value) {
+    const cityToCheck = selectedCity.value === 'custom' ? selectedCity.value : selectedCity.value
+    filtered = filtered.filter(s => s.city === cityToCheck)
+  }
+
   return filtered
 })
 
 // ------------------- Update filters -------------------
-const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSort: sort }) => {
+const updateFilter = ({ search, category, minPrice: min, maxPrice: max, priceSort: sort, county, city }) => {
   searchQuery.value = search
   selectedCategory.value = category
   minPrice.value = min
   maxPrice.value = max
   priceSort.value = sort
+
+  selectedCounty.value = county || ''
+  selectedCity.value = city || ''
 }
 
-/*
-  toggleFavorite:
-  - optimistic local update so UI reacts immediately
-  - emit API call to update backend
-  - once API responds, reconcile favorites *in-place* (mutating same array object)
-*/
+// ------------------- Toggle favorite -------------------
 const toggleFavorite = async (serviceId) => {
   if (!user.value) {
     alert('Morate biti prijavljeni da biste dodali favorite.')
     return
   }
 
-  // ------------------- Optimistic local change -------------------
   const index = favorites.value.findIndex(fav => fav._id === serviceId)
   if (index !== -1) {
-    // remove favorite locally
     favorites.value.splice(index, 1)
   } else {
-    // add service object locally (find in services list)
     const service = services.value.find(s => s._id === serviceId)
     if (service) {
       favorites.value.push(service)
     }
   }
 
-  // ------------------- API call -------------------
   try {
     const res = await api.post(`/favorites/${serviceId}`)
     const updatedFavorites = Array.isArray(res.data.favorites) ? res.data.favorites : []
-
-    // ------------------- Reconcile favorites IN-PLACE to avoid reference replacement -------------------
     favorites.value.splice(0, favorites.value.length, ...updatedFavorites)
   } catch (err) {
-    // on error, just log (could also revert optimistic change if desired)
     console.error('❌ Error updating favorites:', err)
   }
 }
 
-// Watch user changes to reload favorites
 watch(user, () => loadFavorites(), { immediate: true })
 
 onMounted(async () => {
-  // load favorites and services first
   await Promise.all([loadFavorites(), loadServices()])
-
   pageReady.value = true
 })
 </script>

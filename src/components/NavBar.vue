@@ -60,7 +60,7 @@ const props = defineProps({ user: Object });
 const emit = defineEmits(['logout']);
 const router = useRouter();
 const menuOpen = ref(false);
-const unreadCount = ref(0);
+// const unreadCount = ref(0);
 
 const leftRoutes = [
   { path: '/', name: 'Home' },
@@ -78,20 +78,20 @@ function logout() {
 // ---------------- Pollanje nepročitanih poruka ----------------
 let intervalId = null;
 
-async function fetchUnread() {
-  if (!props.user) return;
-  try {
-    const res = await api.get('/messages/unread-count');
-    unreadCount.value = res.data.unreadCount;
-  } catch (err) {
-    console.error('Error fetching unread messages:', err);
-  }
-}
+// async function fetchUnread() {
+//   if (!props.user) return;
+//   try {
+//     const res = await api.get('/messages/unread-count');
+//     unreadCount.value = res.data.unreadCount;
+//   } catch (err) {
+//     console.error('Error fetching unread messages:', err);
+//   }
+// }
 
-onMounted(() => {
-  fetchUnread();
-  intervalId = setInterval(fetchUnread, 60000); // svake 1 minute
-});
+// onMounted(() => {
+//   fetchUnread();
+//   intervalId = setInterval(fetchUnread, 60000); // svake 1 minute
+// });
 
 onBeforeUnmount(() => {
   clearInterval(intervalId);
