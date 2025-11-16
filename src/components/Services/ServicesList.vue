@@ -1,8 +1,8 @@
 <template>
   <div class="services-list">
-    <div v-if="loading" class="loader-container">
-      <div class="spinner"></div>
-      <p>Učitavanje...</p>
+    <div v-if="loading" class="d-flex justify-content-center align-items-center min-vh-100">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-3">Učitavanje podataka...</p>
     </div>
 
     <div v-else-if="!services.length" class="no-services text-center">
@@ -28,13 +28,21 @@
         </div>
 
         <div class="service-info flex-grow-1">
-          <h5 class="mb-1">{{ service.customService || service.subcategory || 'Usluga' }}</h5>
-          <p class="mb-1 text-muted">Kategorija: {{ service.category }}</p>
-          <p class="mb-0 fw-semibold">
-            {{ service.priceType === 'dogovor' ? 'Po dogovoru' : service.price + ' BAM / ' + service.priceType }}
-          </p>
-          <p class="mb-0">{{ truncateDescription(service.description) }}</p>
+          <h5 class="mb-1">
+            <span v-if="service.mode === 'offer'">Traži uslugu:</span>
+            <span v-else-if="service.mode === 'demand'">Nudi uslugu:</span>
+            <span v-else>Usluga:</span>
+            {{ ' ' + (service.customService || service.subcategory || service.category) }}
+          </h5>
 
+          <p class="mb-1 fw-semibold">
+            <span>Cijena:</span>
+            <span v-if="service.priceType === 'dogovor'">Po dogovoru</span>
+            <span v-else>{{ formatPrice(service.price, service.priceType) }}</span>
+          </p>
+          <p class="mb-0 text-muted">
+            {{ truncateDescription(service.description) }}
+          </p>
         </div>
 
         <button 
@@ -116,6 +124,7 @@ watch(
   (newVal) => {
     syncLocalFavMap(newVal)
   },
+  
   { immediate: true, deep: true }
 )
 
@@ -131,6 +140,13 @@ const goToPage = (page) => {
   currentPage.value = page
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+watch(
+  () => props.services,
+  () => {
+    currentPage.value = 1
+  },
+  { deep: true }
+)
 
 const goToService = (id) => {
   router.push(`/service/${id}`)
@@ -161,6 +177,11 @@ const onToggleFavorite = (id) => {
 // isFavorite reads localFavMap (fast, local, and in-place)
 const isFavorite = (id) => {
   return !!localFavMap[id]
+}
+
+const formatPrice = (price, priceType) => {
+  const map = { sat: 'h', dan: 'dan', tjedan: 'tjedan', mjesec: 'mjesec' }
+  return `${price} BAM/${map[priceType] || priceType}`
 }
 
 // ------------------- other helpers (unchanged) -------------------

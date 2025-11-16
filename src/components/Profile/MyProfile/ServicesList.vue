@@ -17,22 +17,18 @@
             :key="s._id"
             class="service py-3 d-flex justify-content-between align-items-center border-bottom"
           >
-            <div @click="goToService(s._id)" style="cursor:pointer; display:flex; align-items:center; gap:1rem;">
+            <div
+              @click="goToService(s._id)"
+              style="cursor:pointer; display:flex; align-items:center; gap:1rem;"
+            >
               <!-- MAIN IMAGE -->
               <div
                 class="main-img-wrapper"
                 style="width:100px; height:100px; background:#eee; display:flex; align-items:center; justify-content:center;"
               >
                 <img
-                  v-if="s.images && s.images.length > 0 && s.mainImg !== undefined"
-                  :src="'data:image/jpeg;base64,' + s.images[s.mainImg]"
-                  alt="Main"
-                  style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
-                />
-                <img
-                  v-else
-                  :src="getFallbackImage(s.category)"
-                  alt="Default"
+                  :src="getServiceImage(s)"
+                  alt="Slika usluge"
                   style="width:100%; height:100%; object-fit:cover; border-radius:5px;"
                 />
               </div>
@@ -40,7 +36,7 @@
               <div>
                 <strong>{{ getServiceName(s) }}</strong><br />
                 Tip cijene: {{ formatPriceType(s.priceType) }}<br />
-                Cijena: {{ s.price || "po dogovoru" }}<br />
+                Cijena: {{ s.price || 'po dogovoru' }}<br />
                 <span v-if="s.description"><em>{{ s.description }}</em></span>
                 <p>Grad: {{ s.city }}</p>
                 <p>Mode: {{ s.mode }}</p>
@@ -133,9 +129,18 @@
               <!-- ŽUPANIJA / REGIJA -->
               <div class="col-md-6 mb-3">
                 <label class="form-label">Županija / Regija *</label>
-                <select v-model="editService.county" class="form-select" required @change="onEditCountyChange">
+                <select
+                  v-model="editService.county"
+                  class="form-select"
+                  required
+                  @change="onEditCountyChange"
+                >
                   <option value="">Odaberi županiju / regiju</option>
-                  <option v-for="(cities, countyName) in countiesAndCities" :key="countyName" :value="countyName">
+                  <option
+                    v-for="(cities, countyName) in countiesAndCities"
+                    :key="countyName"
+                    :value="countyName"
+                  >
                     {{ countyName }}
                   </option>
                 </select>
@@ -156,7 +161,13 @@
               <!-- CUSTOM GRAD -->
               <div class="col-md-6 mb-3" v-if="editService.city === 'custom'">
                 <label class="form-label">Unesite grad *</label>
-                <input v-model="editCustomCity" type="text" class="form-control" placeholder="Unesite grad" required />
+                <input
+                  v-model="editCustomCity"
+                  type="text"
+                  class="form-control"
+                  placeholder="Unesite grad"
+                  required
+                />
               </div>
 
               <!-- Price Type -->
@@ -247,7 +258,6 @@
       </div>
     </div>
 
-
     <!-- DELETE MODAL -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -276,7 +286,7 @@ import countiesAndCities from '../../../data/city.json'
 import { Modal } from 'bootstrap'
 
 // --- PROPS ---
-const props = defineProps({ 
+const props = defineProps({
   userId: { type: String, required: false },
   isOwnProfile: { type: Boolean, required: true }
 })
@@ -324,9 +334,13 @@ const onEditCountyChange = () => {
 const getServiceName = s => s.subcategory || s.customService || s.category || 'Nepoznato'
 const formatPriceType = type => type === 'dogovor' ? 'Po dogovoru' : type === 'sat' ? 'Na sat' : 'Na dan'
 
-// --- FALLBACK SLIKA ---
-const getFallbackImage = (category) => {
-  const cat = serviceCategories.find(c => c.category === category)
+// --- POPRAVLJEN PRIKAZ SLIKE ---
+const getServiceImage = (s) => {
+  if (s.images && Array.isArray(s.images) && s.images.length > 0) {
+    const mainIndex = typeof s.mainImg === 'number' && s.mainImg < s.images.length ? s.mainImg : 0
+    return 'data:image/jpeg;base64,' + s.images[mainIndex]
+  }
+  const cat = serviceCategories.find(c => c.category === s.category)
   return cat?.image || '/img/default.png'
 }
 
@@ -357,7 +371,7 @@ onMounted(() => {
   fetchServices()
 })
 
-// --- EDIT & DELETE ---
+// --- OSTALO ---
 const openEditModal = service => {
   editService.value = { ...service, images: [...(service.images || [])] }
   newFiles.value = []
@@ -382,8 +396,6 @@ const confirmDelete = async () => {
     console.error('❌ Greška kod brisanja:', err.response?.data || err)
   }
 }
-
-// --- EDIT FORM HANDLERS ---
 const onEditCategoryChange = () => {
   editService.value.subcategory = ''
   editService.value.customService = ''
@@ -391,13 +403,10 @@ const onEditCategoryChange = () => {
 const onEditPriceTypeChange = () => {
   if (editService.value.priceType === 'dogovor') editService.value.price = null
 }
-
-// --- FILES HANDLER ---
 const handleFileChange = (event) => {
   const files = Array.from(event.target.files)
   newFiles.value.push(...files)
 }
-
 const removeImage = async (idx) => {
   try {
     await api.put(`/services/${editService.value._id}`, {
@@ -406,15 +415,13 @@ const removeImage = async (idx) => {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     editService.value.images.splice(idx, 1)
-    if (editService.value.mainImg === idx) editService.value.mainImg = editService.value.images.length ? 0 : null
+    if (editService.value.mainImg === idx)
+      editService.value.mainImg = editService.value.images.length ? 0 : null
   } catch (err) {
     console.error('❌ Greška kod brisanja slike:', err.response?.data || err)
   }
 }
-
 const setMainImage = (idx) => editService.value.mainImg = idx
-
-// --- SAVE EDIT ---
 const saveEdit = async () => {
   try {
     const formData = new FormData()
@@ -422,7 +429,6 @@ const saveEdit = async () => {
       if(editService.value[key] !== undefined && editService.value[key] !== null)
         formData.append(key, editService.value[key])
     }
-    // grad
     formData.append(
       'city',
       editService.value.city === 'custom' ? editCustomCity.value : editService.value.city
@@ -431,27 +437,24 @@ const saveEdit = async () => {
     if (newFiles.value.length > 0) {
       newFiles.value.forEach(file => formData.append('images', file))
     }
-
     const res = await api.put(`/services/${editService.value._id}`, formData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
-
     const index = services.value.findIndex(s => s._id === editService.value._id)
     if (index !== -1) {
       services.value[index] = res.data
       filteredServices.value = [...services.value]
     }
-
     closeEditModal()
     newFiles.value = []
-
   } catch (err) {
     console.error('❌ Greška kod spremanja:', err.response?.data || err)
   }
 }
-
 defineExpose({ fetchServices })
 </script>
+
+
 
 <style scoped>
 .service i { font-size: 1.2rem; cursor: pointer; }

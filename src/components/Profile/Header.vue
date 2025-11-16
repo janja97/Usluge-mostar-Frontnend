@@ -18,8 +18,27 @@
         </div>
       </div>
 
+      <!-- ⭐ Ocjene -->
+      <!-- Ako postoje ocjene -->
+      <div class="text-center mt-3" v-if="averageRating !== null && averageRating > 0">
+        <div class="stars">
+          <span v-for="n in 5" :key="n">
+            <i
+              class="bi"
+              :class="n <= Math.round(averageRating) ? 'bi-star-fill text-warning' : 'bi-star text-warning'"
+            ></i>
+          </span>
+        </div>
+        <p class="mt-1">{{ averageRating }} / 5</p>
+      </div>
+
+      <!-- Ako ocjena ne postoji -->
+      <div class="text-center mt-3 text-muted" v-else>
+        Korisnik još nije ocijenjen.
+      </div>
+
       <!-- Podaci o korisniku -->
-      <div class="d-flex flex-column align-items-center justify-content-center text-center mt-5">
+      <div class="d-flex flex-column align-items-center justify-content-center text-center mt-4">
         <h1 v-if="displayUser" class="mb-1 playfair">{{ displayUser.fullName }}</h1>
         <p v-if="displayUser?.profession" class="playfair">{{ displayUser.profession }}</p>
       </div>
@@ -90,9 +109,7 @@
 
 <script>
 import { ref, reactive, computed, watch } from "vue";
-import axios from "axios";
 import api from "../../services/api";
-
 
 export default {
   props: {
@@ -105,18 +122,45 @@ export default {
     const modalRef = ref(null);
     const previewImage = ref(null);
 
+    const averageRating = ref(null);
+
     const displayUser = computed(() => props.user || props.loggedInUser || null);
 
     const avatarSrc = computed(() => {
       if (displayUser.value?.avatar?.data) {
-        const byteArray = displayUser.value.avatar.data.data || displayUser.value.avatar.data;
+        const byteArray =
+          displayUser.value.avatar.data.data || displayUser.value.avatar.data;
         const base64String = btoa(
-          new Uint8Array(byteArray).reduce((data, byte) => data + String.fromCharCode(byte), "")
+          new Uint8Array(byteArray).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ""
+          )
         );
         return `data:${displayUser.value.avatar.contentType};base64,${base64String}`;
       }
       return null;
     });
+
+    const fetchRating = async () => {
+      if (!displayUser.value?._id) return;
+
+      try {
+        const { data } = await api.get(
+          `/reviews/user/${displayUser.value._id}/summary`
+        );
+
+        averageRating.value = data.averageRating;
+      } catch (err) {
+        console.error("Greška pri dohvaćanju ocjene:", err);
+      }
+    };
+
+    // Pozovi kad se user učita
+    watch(
+      () => displayUser.value?._id,
+      () => fetchRating(),
+      { immediate: true }
+    );
 
     const form = reactive({
       fullName: displayUser.value?.fullName || "",
@@ -126,7 +170,7 @@ export default {
       profession: displayUser.value?.profession || "",
       birthYear: displayUser.value?.birthYear || "",
       about: displayUser.value?.about || "",
-      avatar: null,
+      avatar: null
     });
 
     watch(
@@ -169,8 +213,8 @@ export default {
           if (form[key]) formData.append(key, form[key]);
         }
 
-        const { data } = await api.put('/users/profile', formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const { data } = await api.put("/users/profile", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
         });
 
         emit("updateUser", data);
@@ -198,13 +242,14 @@ export default {
       previewImage,
       displayUser,
       avatarSrc,
+      averageRating,
       handleImageUpload,
       openModal,
       closeModal,
       saveChanges,
-      deleteUser,
+      deleteUser
     };
-  },
+  }
 };
 </script>
 

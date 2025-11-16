@@ -1,123 +1,200 @@
 [
   {
-    "category": "ciscenje",
-    "icon": "/img/icons/clean.svg",
-    "image": "/img/home/cleaning.png",
+    "category": "Čišćenje",
+    "icon": "/img/services/filter/cleaning.png",
+    "image": "/img/home/cleaning_service.png",
     "color": "#3b82f6",
+    "name": "ciscenje",
     "subcategories": [
-      "dvorista",
-      "kuce",
-      "stana",
-      "apartmana",
-      "auta",
-      "tepih",
-      "namjestaja",
-      "garaza",
-      "poslovnog prostora"
+      "Čišćenje dvorišta",
+      "Čišćenje kuća i stanova",
+      "Čišćenje apartmana",
+      "Čišćenje automobila",
+      "Dubinsko čišćenje tepiha i namještaja",
+      "Čišćenje poslovnih prostora"
     ]
   },
   {
-    "category": "odrzavanje",
-    "icon": "/img/icons/repair.svg",
-    "image": "/img/home/electricity.png",
+    "category": "Građevinski radovi",
+    "icon": "/img/services/filter/helmet.png",
+    "image": "/img/home/helmet.jpg",
+    "color": "#22c55e",
+    "name": "gradevinski radovi",
 
+    "subcategories": [
+      "Fasaderski radovi",
+      "Moler i krečilac",
+      "Stolarski radovi",
+      "Krovopokrivački radovi",
+      "Bravarski radovi"
+    ]
+  },
+  {
+    "category": "Instalaterski radovi",
+    "icon": "/img/services/filter/maintenance.png",
+    "image": "/img/home/plumber.jpg",
     "color": "#22c55e",
     "subcategories": [
-      "elektricar",
-      "vodoinstalater",
-      "fasader",
-      "krovopokrivac",
-      "bravar",
-      "moler",
-      "stolar",
-      "klima servis",
-      "popravka uredaja"
+      "Vodoinstalaterski radovi",
+      "Električarski radovi",
+      "Servis klima i grijanja",
+      "Popravak kućanskih uređaja"
     ]
   },
   {
-    "category": "briga i pomoc",
-    "icon": "/img/icons/service-animal-1.svg",
-     "image": "/img/home/oldmen.png",
+    "category": "Djeca",
+    "icon": "/img/services/filter/children.png",
+    "image": "/img/home/babysiting.png",
     "color": "#8b5cf6",
     "subcategories": [
-      "cuvanje djece",
-      "njege starih i nepokretnih osoba",
-      "kupovina za starije osobe",
-      "pomoc u kuci",
-      "čuvanje ljubimaca"
+      "Čuvanje i njega djece",
+      "Radionice i kreativne aktivnosti za djecu",
+      "STEM edukacija za djecu (programiranje i znanstvene aktivnosti)",
+      "Organizacija dječjih rođendana i proslava",
+      "Igre i interaktivne aktivnosti za djecu",
+      "Sportske aktivnosti za djecu (ples i mini sportovi)",
+      "Prijevoz djece"
     ]
   },
   {
-    "category": "instrukcije",
-    "icon": "/img/icons/online-learning-01.svg",
+    "category": "Stari i nemoćni",
+    "icon": "/img/services/filter/grandparents.png",
+    "image": "/img/home/oldmen.png",
+    "color": "#8b5cf6",
+    "subcategories": [
+      "Njega i asistencija starih i nemoćnih osoba",
+      "Čuvanje i druženje starih i nemoćnih osoba",
+      "Prijevoz starih i nemoćnih osoba (liječnik, kupnja)",
+      "Kupnja namirnica i dostava lijekova za stare i nemoćne osobe",
+      "Administrativna pomoć za stare i nemoćne osobe (plaćanje računa, papirologija)"
+    ]
+  },
+  {
+    "category": "Kućni ljubimci",
+    "icon": "/img/services/filter/dog.png",
+    "image": "/img/home/pets.jpg",
+    "color": "#8b5cf6",
+    "subcategories": [
+      "Čuvanje kućnih ljubimaca",
+      "Šetnja kućnih ljubimaca",
+      "Njega i higijena kućnih ljubimaca",
+      "Trening i dresura kućnih ljubimaca",
+      "Dostava hrane i opreme za kućne ljubimce"
+    ]
+  },
+  {
+    "category": "Instrukcije",
+    "icon": "/img/services/filter/manual.png",
     "image": "/img/home/teacher.png",
     "color": "#14b8a6",
     "subcategories": [
-      "matematika osnovna",
-      "matematika srednja",
-      "fizika osnovna",
-      "fizika srednja",
-      "hemija osnovna",
-      "hemija srednja",
-      "biologija osnovna",
-      "biologija srednja",
-      "povijest",
-      "geografija",
-      "jezici strani",
-      "jezici maternji",
-      "muzika",
-      "programiranje",
-      "informatika",
-      "likovna umjetnost",
-      "sport"
+      "Instrukcije iz matematike (osnovna škola)",
+      "Instrukcije iz matematike (srednja škola)",
+      "Instrukcije iz fizike (osnovna škola)",
+      "Instrukcije iz fizike (srednja škola)",
+      "Instrukcije iz kemije (osnovna škola)",
+      "Instrukcije iz kemije (srednja škola)",
+      "Instrukcije iz biologije (osnovna škola)",
+      "Instrukcije iz biologije (srednja škola)",
+      "Instrukcije iz povijesti",
+      "Instrukcije iz geografije",
+      "Instrukcije iz stranih jezika",
+      "Instrukcije iz materinjeg jezika",
+      "Instrukcije iz glazbe",
+      "Instrukcije iz programiranja",
+      "Instrukcije iz informatike",
+      "Instrukcije iz likovne umjetnosti",
+      "Instrukcije iz sporta"
     ]
   },
   {
-    "category": "transport i dostava",
-    "icon": "/img/icons/transportation-outline-rounded.svg",
+    "category": "Transport i dostava",
+    "icon": "/img/services/filter/delivery.png",
     "image": "/img/home/transport.png",
     "color": "#facc15",
     "subcategories": [
-      "vozac",
-      "kurir",
-      "dostava robe",
-      "selidbe",
-      "prijevoz vozilom"
+      "Dostava namirnica",
+      "Dostava paketa",
+      "Prijevoz osoba",
+      "Pomoć pri selidbi",
+      "Odvoz sitnog otpada",
+      "Odvoz krupnog otpada"
     ]
   },
   {
-    "category": "it i tehnologija",
-    "icon": "/img/icons/laptop-dev-mode.svg",
-    "image": "/img/home/tehnogogy.png",
+    "category": "IT i tehnologija",
+    "icon": "/img/services/filter/it.png",
+    "image": "/img/home/it.jpg",
     "color": "#3b82f6",
     "subcategories": [
-      "popravka racunara",
-      "instalacija softvera",
-      "web dizajn",
-      "programiranje",
-      "odrzavanje mreze",
-      "savjetovanje it"
+      "Popravak računala",
+      "Instalacija softvera",
+      "Web dizajn",
+      "Programiranje",
+      "Održavanje računalne mreže",
+      "Savjetovanje u IT"
     ]
   },
   {
-    "category": "kreativne usluge",
-    "icon": "/img/icons/photo-camera-outline.svg",
+    "category": "Kreativne usluge",
+    "icon": "/img/services/filter/camera.png",
     "image": "/img/home/designing.png",
     "color": "#ec4899",
     "subcategories": [
-      "fotografija",
-      "video snimaanje",
-      "graficki dizajn",
-      "pisanje tekstova",
-      "prevodjenje",
-      "crtanje ilustracije",
-      "izrada suvenira"
+      "Fotografija",
+      "Video snimanje",
+      "Grafički dizajn",
+      "Pisanje tekstova",
+      "Prevođenje",
+      "Crtanje i ilustracije",
+      "Izrada suvenira"
     ]
   },
   {
-    "category": "ostalo",
-    "icon": "/img/icons/fr.svg",
-    "image": "/img/home/female.png",
+    "category": "Radionice za odrasle",
+    "icon": "/img/services/filter/paint.png",
+    "image": "/img/home/paint.jpg",
+    "color": "#ec4899",
+    "subcategories": [
+      "Kreativne radionice za odrasle",
+      "Gastronomske edukacije",
+      "Someljerstvo",
+      "Tehničke i praktične edukacije"
+    ]
+  },
+  {
+    "category": "Fitness",
+    "icon": "/img/services/filter/workout.png",
+    "image": "/img/home/fitnes.jpg",
+    "color": "#ec4899",
+    "subcategories": [
+      "Fitness i teretana",
+      "Osobni treninzi",
+      "Grupni treninzi",
+      "Borilačke vještine",
+      "Treninzi na otvorenom"
+    ]
+  },
+  {
+    "category": "Auta",
+    "icon": "/img/services/filter/car.png",
+    "image": "/img/home/car.jpg",
+    "color": "#f97316",
+    "subcategories": [
+      "Pranje i čišćenje automobila",
+      "Dubinsko čišćenje tepiha i sjedala u automobilu",
+      "Poliranje i voskiranje automobila",
+      "Bojanje i lakiranje automobila",
+      "Popravak karoserije automobila",
+      "Servis i održavanje automobila",
+      "Zamjena ulja i tekućina u automobilu",
+      "Instalacija dodatne opreme za automobil"
+    ]
+  },
+  {
+    "category": "Ostalo",
+    "icon": "/img/services/filter/menu.png",
+    "image": "/img/home/order.jpg",
     "color": "#22c55e",
     "subcategories": []
   }

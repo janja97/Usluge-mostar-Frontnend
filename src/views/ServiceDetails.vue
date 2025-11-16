@@ -183,8 +183,7 @@ const toggleFavorite = async () => {
 };
 
 // Format text (category/subcategory names)
-const formatCategory = (text) =>
-  text.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+const formatCategory = (text) => text.replace(/_/g, " ");
 
 // Format price type
 const formatPriceType = (priceType) => {

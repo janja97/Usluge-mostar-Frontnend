@@ -9,7 +9,7 @@
           <select v-model="newService.category" id="category" class="form-select" required @change="handleCategoryChange">
             <option value="">Odaberi kategoriju</option>
             <option v-for="cat in serviceCategories" :key="cat.category" :value="cat.category">
-              {{ cat.category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+              {{ cat.category }}
             </option>
           </select>
         </div>
@@ -89,8 +89,8 @@
           <label for="mode" class="form-label">Mode *</label>
           <select v-model="newService.mode" id="mode" class="form-select" required>
             <option value="">Odaberi</option>
-            <option value="offer">Offer</option>
-            <option value="demand">Demand</option>
+            <option value="offer">Nudim Uslugu</option>
+            <option value="demand">Tražim uslugu</option>
           </select>
         </div>
 

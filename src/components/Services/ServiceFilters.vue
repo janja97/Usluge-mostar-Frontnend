@@ -1,13 +1,13 @@
 <template>
   <div class="service-filters container-fluid py-3">
-    <!-- Search + filter button -->
+    <!-- Search -->
     <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-4">
       <div class="flex-grow-1 position-relative">
         <i class="bi bi-search search-icon"></i>
-        <input 
-          v-model="localSearch" 
-          type="text" 
-          placeholder="Pretraži usluge ili kategorije..." 
+        <input
+          v-model="localSearch"
+          type="text"
+          placeholder="Pretraži usluge ili kategorije..."
           class="form-control stylish-input search"
           @input="emitFilter"
         />
@@ -26,26 +26,23 @@
       </button>
     </div>
 
-    <!-- Categories horizontal scroll -->
+    <!-- Kategorie -->
     <div class="categories-scroll">
-      <div 
-        v-for="(cat, index) in categories" 
+      <div
+        v-for="(cat, index) in categories"
         :key="index"
         class="category-card"
-        :class="{ 'active': selectedCategory === cat.name }"
+        :class="{ active: selectedCategory === cat.name }"
         @click="selectCategory(cat.name)"
       >
-        <div 
-          class="icon-wrapper" 
-          :style="{ backgroundColor: lightenColor(cat.color, 0.35) }"
-        >
+        <div class="icon-wrapper">
           <img :src="cat.icon" :alt="cat.name" class="category-icon" />
         </div>
         <p class="category-label">{{ cat.name }}</p>
       </div>
     </div>
 
-    <!-- Modal for extra filters -->
+    <!-- MODAL -->
     <div class="modern-modal" v-if="showModal">
       <div class="modal-content-custom">
         <div class="modal-header-custom">
@@ -54,7 +51,7 @@
         </div>
 
         <div class="modal-body-custom">
-          <!-- 1. Vrsta oglasa -->
+          <!-- MODE -->
           <div class="form-group">
             <label>Vrsta oglasa</label>
             <select class="form-select stylish-input" v-model="mode">
@@ -64,7 +61,7 @@
             </select>
           </div>
 
-          <!-- 2. Županija / Regija -->
+          <!-- COUNTY -->
           <div class="form-group">
             <label>Županija / Regija</label>
             <select class="form-select stylish-input" v-model="selectedCounty" @change="updateCityOptions">
@@ -75,7 +72,7 @@
             </select>
           </div>
 
-          <!-- 3. Grad -->
+          <!-- CITY -->
           <div class="form-group" v-if="selectedCounty">
             <label>Grad</label>
             <select class="form-select stylish-input" v-model="selectedCity">
@@ -89,20 +86,21 @@
 
           <div class="form-group" v-if="selectedCity === 'custom'">
             <label>Unesite grad</label>
-            <input type="text" class="form-control stylish-input" v-model="customCity" placeholder="Unesite grad">
+            <input type="text" class="form-control stylish-input" v-model="customCity" placeholder="Unesite grad" />
           </div>
 
-          <!-- 4. Minimalna / Maksimalna cijena -->
+          <!-- PRICES -->
           <div class="form-group">
             <label>Minimalna cijena</label>
-            <input type="number" class="form-control stylish-input" v-model.number="minPrice" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Maksimalna cijena</label>
-            <input type="number" class="form-control stylish-input" v-model.number="maxPrice" placeholder="1000">
+            <input type="number" class="form-control stylish-input" v-model.number="minPrice" />
           </div>
 
-          <!-- 5. Sortiranje po cijeni -->
+          <div class="form-group">
+            <label>Maksimalna cijena</label>
+            <input type="number" class="form-control stylish-input" v-model.number="maxPrice" />
+          </div>
+
+          <!-- SORT -->
           <div class="form-group">
             <label>Sortiraj po cijeni</label>
             <select class="form-select stylish-input" v-model="priceSort">
@@ -123,54 +121,45 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import servicesData from '../../data/services.json'
-import countiesAndCities from '../../data/city.json'
-import { defineEmits } from 'vue'
+import { ref, computed } from "vue";
+import { defineEmits } from "vue";
+import servicesData from "../../data/services.json";
+import countiesAndCities from "../../data/city.json";
 
-const emit = defineEmits(['update:filter'])
+const emit = defineEmits(["update:filter"]);
 
-const localSearch = ref('')
-const selectedCategory = ref(null)
-const minPrice = ref(null)
-const maxPrice = ref(null)
-const priceSort = ref('')
-const showModal = ref(false)
-const mode = ref('')
+const localSearch = ref("");
+const selectedCategory = ref(null);
+const minPrice = ref(null);
+const maxPrice = ref(null);
+const priceSort = ref("");
+const mode = ref("");
 
-const selectedCounty = ref('')
-const selectedCity = ref('')
-const cityOptions = ref([])
-const customCity = ref('')
+const selectedCounty = ref("");
+const selectedCity = ref("");
+const cityOptions = ref([]);
+const customCity = ref("");
 
-// Flatten all counties/regije
-const allCounties = Object.keys(countiesAndCities).sort()
+const showModal = ref(false);
 
-// Kategorije
+// LOAD COUNTIES
+const allCounties = Object.keys(countiesAndCities).sort();
+
+// LOAD CATEGORIES
 const categories = ref(
-  servicesData.map(item => ({
+  servicesData.map((item) => ({
     name: item.category,
-    icon: item.icon || '/img/icons/default.svg',
-    color: item.color || '#adb5bd'
+    icon: item.icon || "/img/icons/default.svg",
+    color: item.color || "#ccc",
   }))
-)
+);
 
-// Provjera aktivnih filtera
-const isFilterActive = computed(() => {
-  return localSearch.value || selectedCategory.value || minPrice.value || maxPrice.value || priceSort.value || mode.value || selectedCounty.value || selectedCity.value || customCity.value
-})
-
-// Odabir kategorije
-const selectCategory = (category) => {
-  selectedCategory.value = selectedCategory.value === category ? null : category
-  emitFilter()
-}
-
-// Emit filter
+// EMIT
 const emitFilter = () => {
-  const cityValue = selectedCity.value === 'custom' ? customCity.value : selectedCity.value
+  const cityValue =
+    selectedCity.value === "custom" ? customCity.value : selectedCity.value;
 
-  emit('update:filter', {
+  emit("update:filter", {
     search: localSearch.value,
     category: selectedCategory.value,
     minPrice: minPrice.value,
@@ -178,54 +167,56 @@ const emitFilter = () => {
     priceSort: priceSort.value,
     mode: mode.value,
     county: selectedCounty.value,
-    city: cityValue
-  })
-}
+    city: cityValue,
+  });
+};
+
+// CATEGORY SELECT
+const selectCategory = (cat) => {
+  selectedCategory.value = selectedCategory.value === cat ? null : cat;
+  emitFilter();
+};
+
+// CLEAR
+const clearFilters = () => {
+  localSearch.value = "";
+  selectedCategory.value = null;
+  minPrice.value = null;
+  maxPrice.value = null;
+  priceSort.value = "";
+  mode.value = "";
+  selectedCounty.value = "";
+  selectedCity.value = "";
+  customCity.value = "";
+  cityOptions.value = [];
+  emitFilter();
+};
+
+// CITY OPTIONS
+const updateCityOptions = () => {
+  selectedCity.value = "";
+  customCity.value = "";
+  cityOptions.value = countiesAndCities[selectedCounty.value] || [];
+};
 
 const applyExtraFilters = () => {
-  emitFilter()
-  showModal.value = false
-}
+  emitFilter();
+  showModal.value = false;
+};
 
-const clearFilters = () => {
-  localSearch.value = ''
-  selectedCategory.value = null
-  minPrice.value = null
-  maxPrice.value = null
-  priceSort.value = ''
-  mode.value = ''
-  selectedCounty.value = ''
-  selectedCity.value = ''
-  customCity.value = ''
-  cityOptions.value = []
-  emitFilter()
-}
-
-// Update gradove kada se odabere županija
-const updateCityOptions = () => {
-  selectedCity.value = ''
-  cityOptions.value = []
-
-  if (!selectedCounty.value) return
-
-  cityOptions.value = countiesAndCities[selectedCounty.value] || []
-}
-
-// Pomoćna funkcija za boje kategorija
-function lightenColor(color, percent) {
-  const num = parseInt(color.replace('#',''),16);
-  const amt = Math.round(2.55 * percent * 95);
-  const R = (num >> 16) + amt;
-  const G = (num >> 8 & 0x00FF) + amt;
-  const B = (num & 0x0000FF) + amt;
-  
-  return '#' + (
-    0x1000000 +
-    (R<255?R<1?0:R:255)*0x10000 +
-    (G<255?G<1?0:G:255)*0x100 +
-    (B<255?B<1?0:B:255)
-  ).toString(16).slice(1);
-}
+const isFilterActive = computed(() => {
+  return (
+    localSearch.value ||
+    selectedCategory.value ||
+    minPrice.value ||
+    maxPrice.value ||
+    priceSort.value ||
+    mode.value ||
+    selectedCounty.value ||
+    selectedCity.value ||
+    customCity.value
+  );
+});
 </script>
 
 <style scoped>
