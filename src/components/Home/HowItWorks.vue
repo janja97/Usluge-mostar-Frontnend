@@ -1,105 +1,139 @@
 <template>
-  <!-- How It Works Section -->
-  <section class="how-it-works py-5">
+  <section class="how-it-works-redesign py-5" aria-labelledby="how-it-works-heading">
     <div class="container">
-      <div class="content-wrapper mb-5">
-        <div class="text-side">
-          <h2>Kako radi?</h2>
-          <p class="section-intro">
-            Naša platforma povezuje ljude koji žele ponuditi male usluge – čuvanje djece, šetnja pasa, keramičarski i električarski radovi, čišćenje, pomoć starijima – s klijentima koji traže pouzdane osobe za ove zadatke. Brzo, jednostavno i sigurno!
-          </p>
-        </div>
-        <div class="image-side">
-          <img src="../../../public/img/home/serviser.png" alt="Serviser" />
-        </div>
+      
+      <div class="header-content text-center mb-5">
+        <h2 id="how-it-works-heading">Jednostavan put do uspjeha</h2>
+        <p class="section-intro-redesign">
+          Bilo da tražiš pouzdanu pomoć ili želiš ponuditi svoje vještine, naša platforma je najbrži i najsigurniji put do realizacije.
+        </p>
       </div>
 
-      <div class="row text-center">
-        <div class="col-12 col-md-4 mb-4">
-          <i class="fas fa-search fa-3x mb-3 text-primary"></i>
-          <h5 class="fs-3">Traži usluge</h5>
-          <p>Pregledaj ponuđene usluge u svojoj blizini i kontaktiraj ponuđače.</p>
+      <div class="steps-grid">
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <span class="step-symbol">🔍</span> 
+          </div>
+          <h3 class="step-title">1. Pronađi ili Ponudi</h3>
+          <p class="step-description">
+            Koristite filtriranu pretragu da pronađete lokalne majstore ili objavite detaljan oglas o svojim uslugama/potrebama.
+          </p>
         </div>
-        <div class="col-12 col-md-4 mb-4">
-          <i class="fas fa-plus-circle fa-3x mb-3 text-primary"></i>
-          <h5 class="fs-3">Ponudi uslugu</h5>
-          <p>Objavi svoju uslugu i privuci klijente koji traže tvoje vještine.</p>
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <span class="step-symbol">💬</span>
+          </div>
+          <h3 class="step-title">2. Direktna Komunikacija</h3>
+          <p class="step-description">
+            Uspostavite kontakt s drugom stranom. Razmijenite informacije, dogovorite detalje posla i cijenu.
+          </p>
         </div>
-        <div class="col-12 col-md-4 mb-4">
-          <i class="fas fa-handshake fa-3x mb-3 text-primary"></i>
-          <h5 class="fs-3">Dogovori se</h5>
-          <p>Komuniciraj, dogovori cijenu i završi posao sigurno.</p>
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <span class="step-symbol">✅</span>
+          </div>
+          <h3 class="step-title">3. Sigurno Ostvari Posao</h3>
+          <p class="step-description">
+            Obavite dogovoreni posao. Ostavite recenziju i izgradite povjerenje u zajednici.
+          </p>
         </div>
+
       </div>
+      
     </div>
   </section>
 </template>
 
+<script>
+export default {
+  name: 'HowItWorks'
+}
+</script>
+
 <style scoped>
-.how-it-works {
-  position: relative;
-  background: var(--bg-dark-blue);
-  color: var(--color-text-light);
-  overflow: hidden;
-  padding: 6rem 2rem;
+/* HOW IT WORKS - LIGHT BACKGROUND */
+.how-it-works-redesign {
+    /* Set to light background */
+    background-color: var(--color-gray-light); 
+    color: var(--color-text-dark); 
+    padding: 6rem 2rem;
+    position: relative;
 }
 
-.content-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
+/* Header & Intro */
+.header-content h2 {
+    font-size: 3rem;
+    color: var(--color-blue-dark);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
-.text-side {
-  flex: 1;
-  min-width: 300px;
-}
-.text-side h2 {
-  font-size: 50px;
-}
-.image-side {
-  flex: 1;
-  min-width: 300px;
-  display: flex;
-  justify-content: flex-end;
-}
-.image-side img {
-  max-width: 100%;
-  height: auto;
+.section-intro-redesign {
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--color-gray); 
 }
 
-.section-intro {
-  font-size: 1.1rem;
-  color: var(--color-text-light);
-  max-width: 600px;
-  margin-top: 1rem;
+/* Steps Grid */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
 }
 
-/* Card */
-.row.text-center i {
-  color: var(--color-blue);
-}
-.row.text-center p {
-  max-width: 200px; 
-  margin: 0 auto; 
-  font-size: 0.95rem; 
-}
-
-
-@media (max-width: 992px) {
-  .content-wrapper {
-    flex-direction: column;
+/* Step Card */
+.step-card {
     text-align: center;
-  }
+    padding: 2rem;
+    background-color: var(--color-white); /* White card background */
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Using the primary color as the bottom accent */
+    border-bottom: 4px solid var(--color-blue); 
+}
 
-  .image-side {
-    justify-content: center;
-    margin-top: 2rem;
-  }
-  .text-side h2  {
-    font-size: 25px;
-  }
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Icons */
+.step-icon {
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.step-symbol {
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--color-orange); /* Orange accent color for symbols */
+}
+
+.step-title {
+    /* Using h3 for SEO hierarchy */
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--color-blue-dark); 
+}
+
+.step-description {
+    font-size: 1rem;
+    color: var(--color-gray);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .how-it-works-redesign {
+        padding: 4rem 1rem;
+    }
+    .header-content h2 {
+        font-size: 2.5rem;
+    }
 }
 </style>

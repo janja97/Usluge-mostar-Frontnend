@@ -1,35 +1,87 @@
 <template>
-  <!-- CTA Section -->
-  <section class="cta-section text-center py-5">
-    <div class="container">
-      <h2 class="mb-4">Pridruži se sada!</h2>
-      <router-link to="/register" class="btn cta-btn btn-lg">Registriraj se besplatno</router-link>
+  <section class="final-cta py-5" aria-labelledby="final-cta-heading">
+    <div class="container text-center">
+      
+      <p class="cta-subtitle">Jednostavno, brzo i sigurno.</p>
+      <h2 id="final-cta-heading">Spremni za rješavanje problema ili pronalazak klijenata?</h2>
+      
+      <a href="/register" class="btn-cta-large mt-4">
+        Registriraj se besplatno i započni!
+      </a>
+      
     </div>
   </section>
 </template>
 
+<script>
+export default {
+  name: 'FinalCta'
+}
+</script>
+
 <style scoped>
-.cta-section {
-  background: var(--bg-dark-blue);
-  color: var(--color-text-light);  
+/* FINAL CTA - DARK BACKGROUND */
+.final-cta {
+    /* Set to dark background */
+    background-color: var(--color-blue-dark);
+    color: var(--color-text-light); 
+    padding: 5rem 2rem;
 }
 
-.cta-section h2 {
-  margin-bottom: 1.5rem;
+.cta-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-orange); /* Highlighted subtitle in orange */
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
 }
 
-.cta-btn {
-  background-color: var(--color-orange); 
-  color: #fff;
-  border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  transition: background 0.3s ease;
+.final-cta h2 {
+    /* Main H2 tag for SEO and prominence */
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
 }
 
-.cta-btn:hover {
-  background-color: var(--color-orange-hover); 
-  color: #fff;
+/* Reusing the large button style */
+.btn-cta-large {
+    display: inline-block;
+    padding: 15px 40px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 50px; 
+    cursor: pointer;
+    text-transform: uppercase;
+    
+    background-color: var(--color-orange);
+    color: var(--color-white);
+    border: 2px solid var(--color-orange);
+    box-shadow: 0 8px 15px rgba(234, 126, 61, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-cta-large:hover {
+    background-color: var(--color-orange-hover);
+    border-color: var(--color-orange-hover);
+    box-shadow: 0 4px 8px rgba(234, 126, 61, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .final-cta {
+        padding: 3rem 1rem;
+    }
+    .final-cta h2 {
+        font-size: 2rem;
+    }
+    .btn-cta-large {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 15px 20px;
+        box-sizing: border-box;
+    }
 }
 </style>

@@ -1,64 +1,86 @@
 <template>
-  <div class="services-list">
-    <div v-if="loading" class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="services-list container-fluid py-4">
+    <div v-if="loading" class="d-flex justify-content-center align-items-center min-vh-75">
       <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-3">Učitavanje podataka...</p>
+      <p class="mt-3 ms-2">Učitavanje podataka...</p>
     </div>
 
     <div v-else-if="!services.length" class="no-services text-center">
       <img src="/img/home/garden.png" alt="No services" class="no-services-img" />
       <h5 class="mt-3">Trenutno nema dostupnih usluga</h5>
+      <p class="text-muted">Pokušajte promijeniti filtere.</p>
     </div>
 
     <div v-else>
       <div
         v-for="service in paginatedServices"
         :key="service._id"
-        class="service-row d-flex align-items-center mb-3 p-3 border rounded"
+        class="service-row-card"
         @click="goToService(service._id)"
       >
         <div class="service-image-wrapper me-3">
           <img
             v-if="getServiceImage(service)"
             :src="getServiceImage(service)"
-            alt="Service image"
+            :alt="'Slika usluge: ' + (service.customService || service.subcategory || service.category)"
             class="service-image"
           />
-          <div v-else class="service-placeholder"></div>
+          <div v-else class="service-placeholder">
+            <i class="bi bi-gear-wide-connected placeholder-icon"></i>
+          </div>
         </div>
 
         <div class="service-info flex-grow-1">
-          <h5 class="mb-1">
-            <span v-if="service.mode === 'offer'">Traži uslugu:</span>
-            <span v-else-if="service.mode === 'demand'">Nudi uslugu:</span>
-            <span v-else>Usluga:</span>
-            {{ ' ' + (service.customService || service.subcategory || service.category) }}
+          <span 
+            class="mode-badge-row" 
+            :class="{ 
+              'badge-offer': service.mode === 'offer', 
+              'badge-demand': service.mode === 'demand' 
+            }"
+          >
+            {{ 
+              service.mode === 'offer' 
+                ? 'PONUDA' 
+                : service.mode === 'demand' 
+                  ? 'POTRAŽNJA' 
+                  : 'USLUGA' 
+            }}
+          </span>
+
+          <h5 class="service-title-row mt-1 mb-1">
+            {{ service.customService || service.subcategory || service.category }}
           </h5>
 
-          <p class="mb-1 fw-semibold">
-            <span>Cijena:</span>
+          <p class="service-price-row fw-semibold mb-1">
+            <i class="bi bi-cash me-1"></i> 
             <span v-if="service.priceType === 'dogovor'">Po dogovoru</span>
             <span v-else>{{ formatPrice(service.price, service.priceType) }}</span>
           </p>
-          <p class="mb-0 text-muted">
+          
+          <p class="service-description-row mb-0 text-muted">
             {{ truncateDescription(service.description) }}
+          </p>
+          
+          <p v-if="service.city" class="service-location-row mb-0 mt-1 text-muted">
+            <i class="bi bi-geo-alt me-1"></i> {{ service.city }}
           </p>
         </div>
 
         <button 
           v-if="isLoggedIn" 
-          class="btn-favorite ms-3" 
+          class="btn-favorite-row ms-3" 
           @click.stop="onToggleFavorite(service._id)"
         >
-          <i :class="isFavorite(service._id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
+          <i :class="isFavorite(service._id) ? 'bi bi-heart-fill fav-active' : 'bi bi-heart fav-inactive'"></i>
         </button>
       </div>
 
-      <div v-if="totalPages > 1" class="pagination-container mt-4">
+      <div v-if="totalPages > 1" class="pagination-container mt-5">
         <button 
-          class="page-btn" 
+          class="page-btn page-arrow" 
           :disabled="currentPage === 1"
           @click="currentPage--"
+          aria-label="Prethodna stranica"
         >
           ‹
         </button>
@@ -69,12 +91,17 @@
           @click="goToPage(page)"
           class="page-dot"
           :class="{ active: page === currentPage }"
-        ></span>
+          :aria-current="page === currentPage ? 'page' : undefined"
+          :aria-label="'Idi na stranicu ' + page"
+        >
+          {{ page }}
+        </span>
 
         <button 
-          class="page-btn" 
+          class="page-btn page-arrow" 
           :disabled="currentPage === totalPages"
           @click="currentPage++"
+          aria-label="Sljedeća stranica"
         >
           ›
         </button>
@@ -101,34 +128,26 @@ const isLoggedIn = computed(() => !!userStore.user)
 
 const loading = ref(true)
 
-// ------------------- local reactive map of favorite ids -------------------
-const localFavMap = reactive({}) // { [id]: true }
+// ------------------- local reactive map of favorite ids (Functionality preserved) -------------------
+const localFavMap = reactive({}) 
 const syncLocalFavMap = (favArray) => {
-  // Clear existing keys (mutate in-place)
   for (const k in localFavMap) {
     if (Object.prototype.hasOwnProperty.call(localFavMap, k)) delete localFavMap[k]
   }
-  // Set new keys
   if (Array.isArray(favArray)) {
-    // favArray may contain objects with _id or may be array of ids.
     for (const f of favArray) {
       const id = (f && f._id) ? f._id : f
       if (id) localFavMap[id] = true
     }
   }
 }
-
-// Watch incoming props.favorites and sync into localFavMap (in-place mutation)
 watch(
   () => props.favorites,
-  (newVal) => {
-    syncLocalFavMap(newVal)
-  },
-  
+  (newVal) => { syncLocalFavMap(newVal) },
   { immediate: true, deep: true }
 )
 
-// ------------------- pagination + helpers (unchanged) -------------------
+// ------------------- pagination + helpers (Functionality preserved) -------------------
 const currentPage = ref(1)
 const perPage = 6
 const totalPages = computed(() => Math.ceil((props.services || []).length / perPage))
@@ -142,9 +161,7 @@ const goToPage = (page) => {
 }
 watch(
   () => props.services,
-  () => {
-    currentPage.value = 1
-  },
+  () => { currentPage.value = 1 },
   { deep: true }
 )
 
@@ -152,42 +169,32 @@ const goToService = (id) => {
   router.push(`/service/${id}`)
 }
 
-// ------------------- toggle favorite flow in child -------------------
-/*
-  onToggleFavorite:
-  - optimistically flip the local state for the single id (no re-creation)
-  - emit to parent to perform backend update & parent optimistic change
-  - parent will update props.favorites, which will trigger the watch above to reconcile localFavMap
-*/
+// ------------------- toggle favorite flow (Functionality preserved) -------------------
 const onToggleFavorite = (id) => {
   if (!isLoggedIn.value) return
 
-  // Optimistically flip only this id in-place
   if (localFavMap[id]) {
     delete localFavMap[id]
   } else {
     localFavMap[id] = true
   }
-
-
-  // emit to parent to actually toggle (parent will call API)
   emit('toggle-favorite', id)
 }
 
-// isFavorite reads localFavMap (fast, local, and in-place)
 const isFavorite = (id) => {
   return !!localFavMap[id]
 }
 
 const formatPrice = (price, priceType) => {
   const map = { sat: 'h', dan: 'dan', tjedan: 'tjedan', mjesec: 'mjesec' }
-  return `${price} BAM/${map[priceType] || priceType}`
+  const formattedPrice = new Intl.NumberFormat('hr-HR', { style: 'currency', currency: 'BAM', minimumFractionDigits: 0 }).format(price);
+  return `${formattedPrice}/${map[priceType] || priceType}`
 }
 
-// ------------------- other helpers (unchanged) -------------------
+// ------------------- other helpers (Functionality preserved) -------------------
 const truncateDescription = (desc) => {
-  if (!desc) return ''
-  return desc.length > 50 ? desc.substring(0, 50) + '...' : desc
+  if (!desc) return 'Nema opisa...'
+  return desc.length > 80 ? desc.substring(0, 80) + '...' : desc
 }
 
 const getServiceImage = (service) => {
@@ -206,52 +213,48 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-/* Loader */
-.loader-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 0;
-}
-.spinner {
-  border: 4px solid var(--color-light-gray);
-  border-top: 4px solid var(--color-blue);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 0.5rem;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Define primary colors */
+:root {
+  --color-primary: var(--color-blue);
+  --color-secondary: var(--color-orange);
+  --color-text-dark: #333;
+  --color-light-gray: #f5f5f5;
+  --color-white: #fff;
+  --color-green: #198754; /* Success green for Offer */
+  --color-yellow: #ffc107; /* Warning yellow for Demand */
+  
+  /* Dodana varijabla polar green */
+  --color-green-polar: #4caf50; 
 }
 
-.no-services {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 0;
-}
+/* Loader and No Services styles are fine */
 .no-services-img {
   width: 180px;
   opacity: 0.8;
 }
 
-.service-row {
-  cursor: pointer;
+/* ---------- SERVICE ROW CARD (New Design) ---------- */
+.service-row-card {
   display: flex;
   align-items: center;
-  transition: box-shadow 0.3s;
+  background: var(--color-white);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  position: relative;
 }
-.service-row:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+.service-row-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
 }
+
+/* Image */
 .service-image-wrapper {
-  width: 100px;
+  width: 120px;
   height: 100px;
   border-radius: 8px;
   overflow: hidden;
@@ -267,70 +270,160 @@ onMounted(() => {
   height: 100%;
   background-color: var(--color-light-gray);
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.service-info h5 {
-  font-size: 1.1rem;
+.placeholder-icon {
+  font-size: 2rem;
+  color: #a0a0a0;
 }
-.service-info p {
+
+/* Mode Badge - Prominent Status Indicator */
+.mode-badge-row {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-offer {
+  background-color: var(--color-green);
+  color: var(--color-white);
+}
+.badge-demand {
+  background-color: var(--color-yellow);
+  color: var(--color-text-dark);
+}
+
+/* Info Text */
+.service-info {
+  padding-left: 1rem;
+}
+
+.service-title-row {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.service-price-row {
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+
+.service-description-row {
   font-size: 0.9rem;
-  margin: 2px 0;
+  color: #6c757d;
 }
-.btn-favorite {
+
+.service-location-row {
+  font-size: 0.85rem;
+}
+
+/* Favorite Button */
+.btn-favorite-row {
   border: none;
   background: none;
   font-size: 1.5rem;
   cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.fav-active {
+  color: #dc3545;
+}
+.fav-inactive {
+  color: #a0a0a0;
+  transition: color 0.2s;
+}
+.btn-favorite-row:hover .fav-inactive {
+  color: var(--color-primary);
 }
 
-/* PAGINATION */
+/* ---------- PAGINATION (ISPRAVLJENO) ---------- */
 .pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 15px;
 }
 .page-btn {
-  border: none;
-  background: none;
+  border: 1px solid var(--color-light-gray);
+  background: var(--color-white);
   font-size: 1.2rem;
-  color: var(--color-gray);
+  color: var(--color-primary);
   cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s;
+  padding: 8px 15px;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 .page-btn:hover:not(:disabled) {
-  color: var(--color-dark-blue-hover);
-}
-.page-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 .page-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  padding: 8px 12px;
+  border-radius: 8px;
   background-color: var(--color-light-gray);
-  display: inline-block;
+  color: var(--color-text-dark);
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-.page-dot:hover {
-  background-color: var(--color-dark-blue-hover);
-  transform: scale(1.2);
+  transition: background-color 0.3s, color 0.3s;
 }
 .page-dot.active {
-  background-color: var(--color-blue);
-  transform: scale(1.3);
+  background-color: var(--color-secondary); 
+  /* ISPRAVKA: Postavljamo tamnu boju teksta (ili bijelu ako je pozadina tamna),
+     kako bi broj bio vidljiv na narandžastoj/žutoj pozadini. 
+     Ako je sekundarna boja #ffc107 (žuta), treba nam tamni tekst: */
+  color: var(--color-text-dark); 
+  transform: scale(1.05);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Blaga sjena za isticanje */
 }
 
-@media (max-width: 600px) {
-  .service-row {
+/* ---------- RESPONSIVE TWEAKS (Mobile Optimization) ---------- */
+@media (max-width: 768px) {
+  .service-row-card {
     flex-direction: column;
-    text-align: center;
+    align-items: flex-start;
+    padding: 1rem;
   }
+  
   .service-image-wrapper {
+    width: 100%;
+    height: 150px;
     margin-bottom: 1rem;
+    margin-right: 0 !important;
+  }
+
+  .service-info {
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .btn-favorite-row {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+    background: var(--color-white);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .service-title-row {
+    font-size: 1.1rem;
+  }
+  .service-price-row, .service-description-row {
+    font-size: 0.9rem;
+  }
+  .mode-badge-row {
+    font-size: 0.7rem;
   }
 }
 </style>

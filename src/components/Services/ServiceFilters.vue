@@ -1,7 +1,7 @@
 <template>
   <div class="service-filters container-fluid py-3">
-    <!-- Search -->
     <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-4">
+      
       <div class="flex-grow-1 position-relative">
         <i class="bi bi-search search-icon"></i>
         <input
@@ -13,8 +13,9 @@
         />
       </div>
 
-      <button class="btn filter-btn" @click="showModal = true">
+      <button class="btn filter-btn position-relative" @click="showModal = true">
         <i class="bi bi-funnel"></i> Filteri
+        <span v-if="isExtraFilterActive" class="filter-active-dot"></span>
       </button>
 
       <button 
@@ -26,7 +27,6 @@
       </button>
     </div>
 
-    <!-- Kategorie -->
     <div class="categories-scroll">
       <div
         v-for="(cat, index) in categories"
@@ -42,7 +42,6 @@
       </div>
     </div>
 
-    <!-- MODAL -->
     <div class="modern-modal" v-if="showModal">
       <div class="modal-content-custom">
         <div class="modal-header-custom">
@@ -51,7 +50,6 @@
         </div>
 
         <div class="modal-body-custom">
-          <!-- MODE -->
           <div class="form-group">
             <label>Vrsta oglasa</label>
             <select class="form-select stylish-input" v-model="mode">
@@ -61,7 +59,6 @@
             </select>
           </div>
 
-          <!-- COUNTY -->
           <div class="form-group">
             <label>Županija / Regija</label>
             <select class="form-select stylish-input" v-model="selectedCounty" @change="updateCityOptions">
@@ -72,7 +69,6 @@
             </select>
           </div>
 
-          <!-- CITY -->
           <div class="form-group" v-if="selectedCounty">
             <label>Grad</label>
             <select class="form-select stylish-input" v-model="selectedCity">
@@ -89,7 +85,6 @@
             <input type="text" class="form-control stylish-input" v-model="customCity" placeholder="Unesite grad" />
           </div>
 
-          <!-- PRICES -->
           <div class="form-group">
             <label>Minimalna cijena</label>
             <input type="number" class="form-control stylish-input" v-model.number="minPrice" />
@@ -100,7 +95,6 @@
             <input type="number" class="form-control stylish-input" v-model.number="maxPrice" />
           </div>
 
-          <!-- SORT -->
           <div class="form-group">
             <label>Sortiraj po cijeni</label>
             <select class="form-select stylish-input" v-model="priceSort">
@@ -123,6 +117,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { defineEmits } from "vue";
+// Assuming servicesData and countiesAndCities are imported correctly
 import servicesData from "../../data/services.json";
 import countiesAndCities from "../../data/city.json";
 
@@ -154,7 +149,7 @@ const categories = ref(
   }))
 );
 
-// EMIT
+// EMIT FILTER EVENT
 const emitFilter = () => {
   const cityValue =
     selectedCity.value === "custom" ? customCity.value : selectedCity.value;
@@ -171,13 +166,13 @@ const emitFilter = () => {
   });
 };
 
-// CATEGORY SELECT
+// CATEGORY SELECT TOGGLE
 const selectCategory = (cat) => {
   selectedCategory.value = selectedCategory.value === cat ? null : cat;
   emitFilter();
 };
 
-// CLEAR
+// CLEAR ALL FILTERS
 const clearFilters = () => {
   localSearch.value = "";
   selectedCategory.value = null;
@@ -192,18 +187,20 @@ const clearFilters = () => {
   emitFilter();
 };
 
-// CITY OPTIONS
+// UPDATE CITY OPTIONS BASED ON COUNTY SELECTION
 const updateCityOptions = () => {
   selectedCity.value = "";
   customCity.value = "";
   cityOptions.value = countiesAndCities[selectedCounty.value] || [];
 };
 
+// APPLY EXTRA FILTERS FROM MODAL
 const applyExtraFilters = () => {
   emitFilter();
   showModal.value = false;
 };
 
+// COMPUTED: Check if ANY filter (search, category, or extra) is active (for the Clear button)
 const isFilterActive = computed(() => {
   return (
     localSearch.value ||
@@ -217,208 +214,277 @@ const isFilterActive = computed(() => {
     customCity.value
   );
 });
+
+// COMPUTED: Check if EXTRA filters (only modal fields) are active (for the orange dot)
+const isExtraFilterActive = computed(() => {
+    // We exclude `localSearch` and `selectedCategory` here
+    return (
+        minPrice.value ||
+        maxPrice.value ||
+        priceSort.value ||
+        mode.value ||
+        selectedCounty.value ||
+        selectedCity.value ||
+        customCity.value
+    );
+});
 </script>
 
 <style scoped>
-/* ---------- Filter bar ---------- */
+/* GENERAL STYLING */
+.service-filters {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ---------- Filter Bar (Modern, Darker Look) ---------- */
 .filter-bar {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  padding: 1rem 0.5rem;
+    /* Dark background for prominence */
+    background: var(--color-blue); 
+    border-radius: 16px;
+    padding: 1rem 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .stylish-input {
-  border-radius: 12px;
-  border: 1px solid var(--color-light-blue);
-  padding: 10px 14px;
-  transition: all 0.3s ease;
+    /* Base styling for all form controls */
+    border-radius: 10px;
+    border: 1px solid var(--color-blue-light);
+    padding: 12px 14px;
+    transition: all 0.3s ease;
+    background-color: var(--color-white);
+    color: var(--color-text-dark);
 }
 
 .stylish-input:focus {
-  border-color: var(--color-blue);
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-  outline: none;
+    /* Orange glow on focus */
+    border-color: var(--color-orange);
+    box-shadow: 0 0 0 3px rgba(234, 126, 61, 0.3); 
+    outline: none;
 }
 
+/* Search input specific styling */
 .search-icon {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  color: var(--color-gray);
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--color-blue-dark);
+    z-index: 2; 
 }
 
-.stylish-input {
-  padding-left: 35px;
+.search {
+    padding-left: 40px; /* Space for the search icon */
 }
 
+/* Filter Button */
 .filter-btn {
-  background: var(--color-blue);
-  color: white;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+    background: var(--color-orange);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
 .filter-btn:hover {
-  background: var(--color-blue-hover);
+    background: var(--color-orange-hover);
 }
 
+/* Active Filter Indicator Dot */
+.filter-active-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-orange-dark);
+    border-radius: 50%;
+    /* Border matches filter bar background */
+    border: 2px solid var(--color-blue); 
+    z-index: 10;
+}
+
+
+/* Clear Button */
 .clear-btn {
-  background: var(--color-orange);
-  color: white;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+    background: var(--color-blue-dark);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
-.clear-btn:hover {
-  background: var(--color-orange-hover);
+.clear-btn:hover:not(:disabled) {
+    background: #0d2139; /* Slightly darker shade */
 }
 
-/* ---------- Horizontal scroll kategorije ---------- */
+.clear-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---------- Horizontal Scroll Categories ---------- */
 .categories-scroll {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  gap: 1rem;
-  padding: 1rem 0.5rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-light-blue) transparent;
-}
-
-.categories-scroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.categories-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-light-blue);
-  border-radius: 10px;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    scrollbar-width: thin; 
+    scrollbar-color: var(--color-blue-light) transparent;
 }
 
 .category-card {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  background: white;
-  border-radius: 16px;
-  padding: 12px;
-  text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  cursor: pointer;
-  min-width: 100px;
-  max-width:200px;
-  height: 130px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    background: var(--color-white);
+    border-radius: 16px;
+    padding: 15px 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    cursor: pointer;
+    min-width: 100px;
+    max-width: 200px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
 }
 
 .category-card:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
 .category-card.active {
-  background: var(--color-light-blue);
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 0 10px rgba(96,165,250,0.5);
+    background: var(--color-blue);
+    color: var(--color-white);
+    font-weight: 600;
+    /* Orange active border for strong focus */
+    border-color: var(--color-orange); 
+    box-shadow: 0 0 10px rgba(22, 58, 94, 0.5);
+}
+
+/* Icon Wrapper Background */
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--color-gray-light); 
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-card.active .icon-wrapper {
+    /* Darker icon background when active */
+    background-color: var(--color-blue-dark); 
 }
 
 .category-icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
-.icon-wrapper {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  margin: 0 auto 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
+.category-label {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: var(--color-text-dark);
+    /* Ensure full name display */
+    word-wrap: break-word; 
+    white-space: normal;
 }
 
-/* ---------- Modal ---------- */
+.category-card.active .category-label {
+    color: var(--color-white);
+}
+
+/* ---------- Modal Styling ---------- */
 .modern-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(24,48,112,0.35);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
-  animation: fadeIn 0.3s ease;
+    position: fixed;
+    inset: 0;
+    /* Semi-transparent dark overlay with blur */
+    background: rgba(21, 48, 78, 0.7); 
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    animation: fadeIn 0.3s ease;
 }
 
 .modal-content-custom {
-  background: rgba(255,255,255,0.92);
-  border-radius: 20px;
-  padding: 24px;
-  width: 90%;
-  max-width: 420px;
-  max-height: 80vh;      /* Fiksna visina modala */
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  animation: slideUp 0.3s ease;
-  overflow: hidden;      /* Sprečava scroll pozadine */
+    background: var(--color-white);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    max-height: 85vh; 
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    overflow: hidden; 
 }
 
-.modal-header-custom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+.modal-header-custom h5 {
+    font-weight: 700;
+    color: var(--color-blue-dark);
+    font-size: 1.5rem;
 }
 
 .modal-body-custom {
-  flex: 1;               /* Popunjava preostali prostor */
-  overflow-y: auto;      /* Scroll unutar modala */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-right: 5px;    /* Za scrollbar */
-}
-
-/* Scrollbar za modal */
-.modal-body-custom::-webkit-scrollbar {
-  width: 6px;
-}
-
-.modal-body-custom::-webkit-scrollbar-thumb {
-  background-color: rgba(59,130,246,0.5);
-  border-radius: 3px;
+    flex: 1; 
+    overflow-y: auto; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-right: 10px; 
 }
 
 .form-group label {
-  font-weight: 500;
-  color: var(--color-gray);
-  margin-bottom: 4px;
+    font-weight: 600;
+    color: var(--color-blue);
+    margin-bottom: 5px;
+    display: block;
+    font-size: 0.95rem;
 }
 
 .modal-footer-custom {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .primary-btn {
-  background: var(--color-blue);
-  color: #fff;
-  border-radius: 10px;
-  padding: 8px 16px;
+    background: var(--color-orange);
+    color: var(--color-white);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+.primary-btn:hover {
+    background: var(--color-orange-hover);
 }
 
 .secondary-btn {
-  background: var(--color-light-gray);
-  border-radius: 10px;
-  padding: 8px 16px;
+    background: var(--color-gray-light);
+    color: var(--color-text-dark);
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+}
+.secondary-btn:hover {
+    background: var(--color-light-gray);
 }
 
 /* Animations */
@@ -428,7 +494,7 @@ const isFilterActive = computed(() => {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -440,27 +506,28 @@ const isFilterActive = computed(() => {
     gap: 0.8rem;
   }
 
-  .filter-bar > .flex-grow-1 {
+  .filter-bar > .flex-grow-1, .filter-bar .btn {
     width: 100%;
   }
 
-  .filter-bar .btn {
-    width: 100%;
-  }
-  .search {
-    padding-left: 35px !important;
-  }
-  .modal-content-custom{
-    max-height: 90vh;
-  } 
-  .modal-footer-custom button ,.form-group label ,.category-label, .stylish-input ,.filter-bar .btn{
+  .stylish-input {
     font-size: 1rem !important;
   }
-  .stylish-input {
-    padding-left: 10px;
+  
+  .search {
+    padding-left: 40px !important;
   }
-  h5 {
-    font-size: 1rem;
+  
+  .search-icon {
+    left: 14px;
+  }
+
+  .modal-content-custom {
+    padding: 20px;
+  }
+  
+  .modal-header-custom h5 {
+    font-size: 1.25rem;
   }
 }
 </style>

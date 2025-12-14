@@ -37,12 +37,14 @@ a.primary:hover, button.primary:hover {
 }
 
 a.secondary, button.secondary {
-  background-color: var(--color-light-blue);
-  color: var(--color-text-dark);
+  background-color: var( --color-orange);
+  color: var(--color-white);
 }
 
 a.secondary:hover, button.secondary:hover {
-  background-color: var(--color-light-blue-hover);
+  background-color: var( --color-orange-hover);
+    color: var(--color-white);
+
 }
 
 a.danger, button.danger {

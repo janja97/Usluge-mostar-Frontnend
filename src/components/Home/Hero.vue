@@ -5,10 +5,11 @@
         <div class="text-content">
           <h1 class="hero-title">Sve usluge na jednom mjestu</h1>
           <p class="hero-subtitle">
-            Pregledajte sve dostupne usluge – od čuvanja djece, šetnje pasa, keramičarskih radova do električarskih usluga. Kliknite na oglas i stupite u kontakt s osobom koja pruža uslugu. Brzo, jednostavno i sigurno.
+            Pronađi provjerenog majstora ili ponudi svoje usluge – sve na jednom mjestu.<br>
+            Od čuvanja djece i instrukcija do čišćenja, popravaka i fizičkih poslova — brzo, jednostavno i sigurno.
           </p>
           <div class="hero-buttons">
-            <router-link to="/services" class="btn primary">Pronadi posao</router-link>
+            <router-link to="/services" class="btn secondary">Pogledaj oglase</router-link>
 
             <!-- <router-link to="/register" class="btn primary">Registriraj se</router-link>
             <router-link to="/login" class="btn secondary">Prijavi se</router-link> -->
@@ -75,11 +76,6 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
-.container {
-  max-width: 1200px;
-  width: 100%;
-}
-
 .hero-content {
   display: flex;
   align-items: center;
@@ -95,13 +91,13 @@ onBeforeUnmount(() => {
 .hero-title {
   font-size: 3rem;
   font-weight: 700;
-  color: #111;
+  color:var(--color-blue);
   margin-bottom: 1rem;
 }
 
 .hero-subtitle {
   font-size: 1.25rem;
-  color: #555;
+  color:var(--color-blue);
   margin-bottom: 2rem;
 }
 
@@ -109,6 +105,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+
 }
 
 

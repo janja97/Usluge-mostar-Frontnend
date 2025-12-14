@@ -1,19 +1,19 @@
 <template>
-  <!-- Featured Services Section -->
   <section class="featured-services">
     <div class="container">
       <div class="featured-header">
-        <h2 class="section-title">Featured Services</h2>
-        <router-link to="/services" class="btn primary">View All Listings</router-link>
+        <h2 class="section-title">Usluge</h2>
+        <router-link to="/services" class="btn primary">Sve usluge</router-link>
       </div>
 
       <div v-if="featuredServices.length === 0" class="text-center">
-        <p>There are currently no available services.</p>
+        <p>Trenutno nema aktivnih usluga.</p>
       </div>
 
       <div class="services-grid" v-else>
         <div class="service-card" v-for="(s, index) in featuredServices" :key="index">
-          <!-- ✅ Display image from DB or fallback from JSON -->
+
+          <!-- SLIKA -->
           <div class="card-image-wrapper">
             <img
               v-if="s.images && s.images.length > 0"
@@ -30,19 +30,34 @@
           </div>
 
           <div class="card-content">
-            <h5 class="card-title">
-              {{ s.subcategory || s.category || s.customService || 'Unknown Service' }}
-            </h5>
-            <p class="card-user">{{ s.user?.fullName || 'Unknown User' }}</p>
-            <p class="card-service">{{ s.service === 'ostalo' ? s.customService : s.service }}</p>
-            <p class="card-price">
-              Price:
-              <span v-if="s.priceType === 'dogovor'">Negotiable</span>
-              <span v-else-if="s.priceType === 'sat' || s.priceType === 'dnevno'">
-                {{ s.price ? `${s.price} €/${s.priceType === 'sat' ? 'hour' : 'day'}` : 'Not defined' }}
-              </span>
-              <span v-else>Not defined</span>
+
+            <!-- MODE -->
+            <p class="card-mode">
+              {{ s.mode === 'offer' ? 'Nudim uslugu:' : 'Tražim uslugu:' }}
             </p>
+
+            <!-- NASLOV -->
+            <h5 class="card-title">
+              {{ s.subcategory || s.category || s.customService || 'Nepoznata usluga' }}
+            </h5>
+
+            <!-- GRAD -->
+            <p class="card-city">
+              📍 {{ s.city || 'Nepoznat grad' }}
+            </p>
+
+            <!-- CIJENA -->
+            <p class="card-price">
+              <strong>
+                <span v-if="s.priceType === 'dogovor'">Po dogovoru</span>
+                <span v-else-if="s.priceType === 'sat' || s.priceType === 'dnevno'">
+                  {{ s.price ? `${s.price} BAM / ${s.priceType === 'sat' ? 'sat' : 'dan'}` : 'Nije definirano' }}
+                </span>
+                <span v-else>Nije definirano</span>
+              </strong>
+            </p>
+
+            <!-- KRATKI OPIS -->
             <p class="card-description">
               {{ s.description && s.description.length > 50
                 ? s.description.substring(0, 50) + '...'
@@ -50,9 +65,13 @@
             </p>
           </div>
 
+          <!-- FOOTER -->
           <div class="card-footer">
-            <router-link :to="`/service/${s._id}`" class="btn primary px-3 py-2 fs-6">View Details</router-link>
+            <router-link :to="`/service/${s._id}`" class="btn secondary px-3 py-2 fs-6">
+              Detalji
+            </router-link>
           </div>
+
         </div>
       </div>
     </div>
@@ -62,20 +81,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../../services/api';
-import servicesData from '../../data/services.json'; 
+import servicesData from '../../data/services.json';
 
 const services = ref([]);
 const featuredServices = ref([]);
 
-// ✅ helper: get default category image
 const getCategoryImage = (category) => {
   const found = servicesData.find(
     (item) => item.category.toLowerCase() === category?.toLowerCase()
   );
-  return found ? found.image : '/img/home/female.png'; // fallback ako nema kategorije
+  return found ? found.image : '/img/home/female.png';
 };
 
-// Load services
 const loadServices = async () => {
   try {
     const res = await api.get('/services');
@@ -88,6 +105,7 @@ const loadServices = async () => {
 
 onMounted(loadServices);
 </script>
+
 
 <style scoped>
 .featured-services {
@@ -106,37 +124,37 @@ onMounted(loadServices);
 
 .section-title {
   font-size: 2rem;
-  font-weight: 700;
-  color: #111;
-  margin-bottom: 1rem;
+  font-weight: 800;
+  color:var(--color-primary);
 }
 
 .services-grid {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
+/* ★ NOVI STIL KARTICE */
 .service-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .service-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 28px rgba(0,0,0,0.12);
 }
 
 .card-image-wrapper {
   width: 100%;
-  height: 180px;
-  border-radius: 8px;
+  height: 190px;
+  border-radius: 14px;
   overflow: hidden;
   margin-bottom: 1rem;
 }
@@ -145,51 +163,52 @@ onMounted(loadServices);
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-.card-placeholder {
-  width: 100%;
-  height: 100%;
-  background-color: #ddd;
-  border-radius: 8px;
+.card-mode {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-blue-dark);
+  margin-bottom: 0.2rem;
 }
 
 .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 700;
   color: #111;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.4rem;
 }
 
-.card-user {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 0.5rem;
-}
-
-.card-service {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.card-price {
+/* GRAD */
+.card-city {
   font-size: 0.95rem;
-  color: #3b82f6;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  color: #444;
+  margin-bottom: 0.7rem;
+}
+
+/* CIJENA — PRIMARY */
+.card-price {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  margin-bottom: 0.8rem;
 }
 
 .card-description {
   font-size: 0.9rem;
   color: #555;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
 @media (max-width: 768px) {
   .section-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 </style>
+

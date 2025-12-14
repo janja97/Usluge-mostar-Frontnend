@@ -1,30 +1,28 @@
 :root {
-  /* Existing colors */
+  /* PRIMARY – YOUR COLORS */
+  --color-blue: rgba(22, 58, 94);               /* main blue */
+  --color-blue-light: #3a6a9a;
+  --color-blue-lighter: #6e93b6;
+  --color-blue-dark: #15304e;
+  --color-blue-hover: #1e4a77;
+
+  --color-orange: rgba(234, 126, 61);           /* main orange */
+  --color-orange-light: #f3b17c;
+  --color-orange-lighter: #f7cba6;
+  --color-orange-dark: #c86f33;
+  --color-orange-hover: #da7f2a;
+
+  /* NEUTRALS – matching your palette */
+  --color-black: #111;
+  --color-white: #ffffff;
+
   --color-gray: #334155;
-  --color-light-gray: #f5f5f5; 
+  --color-gray-light: #f5f5f5;
+  --color-gray-dark: #1f2937;
 
-  --color-orange: #f59e0b;
-  --color-orange-hover: #d97706;
-
-  --color-blue: #3b82f6;
-  --color-light-blue: #60a5fa; 
-  --color-dark-blue: #1d4ed8;
-  --bg-dark-blue: #183070;
-  --color-blue-hover: #2563eb;
-  --color-light-blue-hover: #3b82f6; 
-  --color-dark-blue-hover: #1e40af; 
-
+  --color-green: #198754;
+  --color-yellow: #ffc107;
+  /* TEXT */
   --color-text-dark: #111;
   --color-text-light: #f2f1f1;
-
-  /* New palette */
-  :root {
-  --color-green: #22c55e;     
-  --color-purple: #8b5cf6;     
-  --color-pink: #ec4899;       
-  --color-teal: #14b8a6;       
-  --color-yellow: #facc15;     
-  --color-orange: #f59e0b;     
-  --color-blue: #3b82f6;       
-}
 }

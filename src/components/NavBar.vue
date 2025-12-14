@@ -1,23 +1,34 @@
 <template>
   <nav class="custom-navbar">
     <div class="container">
-      <router-link class="logo" to="/">MyLogo</router-link>
+      <router-link class="logo" to="/">
+        <img src="../../public/img/logo/logo4.png" alt="logo" />
+      </router-link>
 
       <ul class="nav-links">
         <li v-for="route in leftRoutes" :key="route.name">
           <router-link :to="route.path" class="nav-link">
             {{ route.name }}
-            <!-- 🔴 Crveni krug za Messenger -->
-            <span v-if="route.name === 'Messenger' && unreadCount > 0" class="unread-dot"></span>
           </router-link>
         </li>
+
+        <!-- Profil link ako je user prijavljen -->
+        <li v-if="user">
+          <router-link to="/profile" class="nav-link">Profil</router-link>
+        </li>
+        <li v-if="user">
+          <router-link to="/messages" class="nav-link">Poruke</router-link>
+        </li>
       </ul>
 
+      <!-- AUTH sekcija (desktop) -->
       <div class="auth-buttons">
         <template v-if="user">
+          <img :src="avatarUrl" class="nav-avatar" />
           <span class="user-name">{{ user.fullName }}</span>
           <button class="btn logout-btn" @click="logout">Logout</button>
         </template>
+
         <template v-else>
           <router-link class="btn login-btn" to="/login">Login</router-link>
           <router-link class="btn register-btn" to="/register">Register</router-link>
@@ -27,20 +38,31 @@
       <button class="mobile-toggle" @click="menuOpen = !menuOpen">☰</button>
     </div>
 
+    <!-- MOBILE MENU -->
     <div v-if="menuOpen" class="mobile-menu">
-      <ul>
-        <li v-for="route in leftRoutes" :key="route.name">
+      <ul class="text-center">
+        <li v-for="route in leftRoutes" :key="route.name" >
           <router-link :to="route.path" class="nav-link">
             {{ route.name }}
-            <span v-if="route.name === 'Messenger' && unreadCount > 0" class="unread-dot"></span>
           </router-link>
         </li>
+        <li v-if="user">
+          <router-link to="/profile" class="nav-link">Profil</router-link>
+        </li>
+        <li v-if="user">
+          <router-link to="/messages" class="nav-link">Poruke</router-link>
+        </li>
       </ul>
+
       <div class="mobile-auth">
-        <template v-if="user">
-          <span class="user-name">{{ user.fullName }}</span>
+        <template v-if="user" >
+          <div class="d-flex align-items-center gap-3">
+            <img :src="avatarUrl" class="nav-avatar" />
+            <span class="user-name">{{ user.fullName }}</span>
+          </div>
           <button class="btn logout-btn" @click="logout">Logout</button>
         </template>
+
         <template v-else>
           <router-link class="btn login-btn" to="/login">Login</router-link>
           <router-link class="btn register-btn" to="/register">Register</router-link>
@@ -50,57 +72,51 @@
   </nav>
 </template>
 
+
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '../services/api';
 
-const props = defineProps({ user: Object });
+const props = defineProps({
+  user: Object
+});
 const emit = defineEmits(['logout']);
+
 const router = useRouter();
 const menuOpen = ref(false);
-// const unreadCount = ref(0);
 
+// Rute bez profila
 const leftRoutes = [
-  { path: '/', name: 'Home' },
-  { path: '/profile', name: 'Profile' },
-  { path: '/services', name: 'Services' },
-  // { path: '/messages', name: 'Messenger' }
+  { path: '/', name: 'Početna' },
+  { path: '/services', name: 'Usluge' },
 ];
 
+// Avatar prikaz (Base64)
+const avatarUrl = computed(() => {
+  if (props.user?.avatar?.data) {
+    const base64 = btoa(
+      new Uint8Array(props.user.avatar.data.data)
+        .reduce((data, byte) => data + String.fromCharCode(byte), "")
+    );
+    return `data:image/jpeg;base64,${base64}`;
+  }
+  return "/img/default-avatar.png"; // default slika
+});
+
+// Logout
 function logout() {
   localStorage.removeItem('token');
   emit('logout');
   router.push('/login');
 }
 
-// ---------------- Pollanje nepročitanih poruka ----------------
 let intervalId = null;
-
-// async function fetchUnread() {
-//   if (!props.user) return;
-//   try {
-//     const res = await api.get('/messages/unread-count');
-//     unreadCount.value = res.data.unreadCount;
-//   } catch (err) {
-//     console.error('Error fetching unread messages:', err);
-//   }
-// }
-
-// onMounted(() => {
-//   fetchUnread();
-//   intervalId = setInterval(fetchUnread, 60000); // svake 1 minute
-// });
-
-onBeforeUnmount(() => {
-  clearInterval(intervalId);
-});
+onBeforeUnmount(() => clearInterval(intervalId));
 </script>
 
 
 <style scoped>
-/* Glavni container */
 .custom-navbar {
   background: #fff;
   border-bottom: 1px solid #eee;
@@ -118,15 +134,10 @@ onBeforeUnmount(() => {
   justify-content: space-between;
 }
 
-/* Logo */
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111;
-  text-decoration: none;
+.logo img {
+  width: 150px;
 }
 
-/* Desktop links */
 .nav-links {
   display: flex;
   gap: 2rem;
@@ -135,15 +146,15 @@ onBeforeUnmount(() => {
 
 .nav-link {
   text-decoration: none;
-  color: #444;
+  color: var(--color-blue-dark);
   font-weight: 500;
   transition: color 0.3s;
+  font-size: 18px;
 }
 .nav-link:hover {
-  color: #007bff;
+  color: var(--color-blue);
 }
 
-/* Auth buttons */
 .auth-buttons {
   display: flex;
   align-items: center;
@@ -153,6 +164,13 @@ onBeforeUnmount(() => {
 .user-name {
   font-weight: 500;
   color: #333;
+}
+
+.nav-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .btn {
@@ -166,20 +184,24 @@ onBeforeUnmount(() => {
 
 .login-btn {
   background: transparent;
-  border: 1px solid #007bff;
-  color: #007bff;
+  border: 1px solid var(--color-blue);
+  color: var(--color-blue);
+  font-size: 18px;
 }
 .login-btn:hover {
-  background: #007bff;
+  background: var(--color-blue);
   color: #fff;
 }
 
 .register-btn {
-  background: #007bff;
+  background: var(--color-orange);
   color: #fff;
+  font-size: 18px;
 }
 .register-btn:hover {
-  background: #0056b3;
+  border: 1px solid var(--color-orange-hover);
+  background: #fff;
+  color: var(--color-orange-hover);
 }
 
 .logout-btn {
@@ -190,7 +212,6 @@ onBeforeUnmount(() => {
   background: #b52a37;
 }
 
-/* Mobile toggle */
 .mobile-toggle {
   display: none;
   font-size: 1.5rem;
@@ -199,7 +220,6 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-/* Mobile menu */
 .mobile-menu {
   display: none;
   flex-direction: column;
@@ -225,16 +245,7 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 
-.unread-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  background: red;
-  border-radius: 50%;
-  margin-left: 6px;
-  vertical-align: middle;
-}
-
+/* Responsive */
 @media (max-width: 992px) {
   .nav-links,
   .auth-buttons {
