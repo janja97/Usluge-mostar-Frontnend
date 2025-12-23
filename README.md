@@ -1,126 +1,68 @@
-# 🌍 Usluge Mostar – Full Stack Web Application  
+# ServiGo Frontend 📱
 
-[![Made with Vue.js](https://img.shields.io/badge/Vue.js-3-green?logo=vue.js)](https://vuejs.org/)  
-[![Made with Node.js](https://img.shields.io/badge/Node.js-Express-green?logo=node.js)](https://expressjs.com/)  
-[![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen?logo=mongodb)](https://www.mongodb.com/)  
-[![TailwindCSS](https://img.shields.io/badge/Styled%20with-TailwindCSS-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)  
+## 🌟 Project Overview
 
----
+The **ServiGo Frontend** provides the user interface for the ServiGo platform. It is designed to be highly intuitive, allowing users to easily search for, offer, and manage services, while maintaining real-time communication with other users.
 
-## 🌟 About the Project  
-**Usluge Mostar** is a **full-stack web application** built to demonstrate my skills as a developer.  
+### Key Application Features:
 
-The idea: a platform where people in **Mostar** (and later other cities) can **offer or search for services** – from simple tasks and freelance work to professional services.  
-
-This project is also part of my **portfolio** to show clean code, structure, and complete full-stack delivery.  
-
----
-
-## ✨ Demo Preview  
-📸 *Screenshots will be added once the UI pages are polished.*  
-
-- **Login Page** – Secure authentication with JWT  
-- **Register Page** – New user account creation  
-- **Upcoming Pages** – Service listing, filters, user profiles, messaging system  
+* **Intuitive Service Search:** Filtering and browsing services by category, location, and keywords.
+* **User Authentication Flow:** Secure login, registration, and persistent user sessions using JWT tokens stored locally.
+* **Detailed User Profiles:** Functionality to view and manage professional profiles (for providers) and client profiles.
+* **Real-Time Chat:** Instant messaging using **Socket.IO** for direct user-to-user communication.
+* **Service & Ad Creation:** Forms for posting new service offerings or job requests/ads.
+* **Review Management:** Displaying existing ratings and submitting new reviews for service providers.
 
 ---
 
-## 🚀 Features Implemented So Far  
+## 💻 Tech Stack (Assumed)
 
-### 🔐 Backend (Node.js + Express)  
-- API server with Express  
-- MongoDB connection via Mongoose  
-- **User authentication** (Register/Login with JWT)  
-- Password hashing with bcrypt  
-- `.env` support for secrets (JWT, MongoDB URI, PORT)  
+The Frontend is typically built as a Single Page Application (SPA) using a modern JavaScript framework to interact with the ServiGo Backend API.
 
-### 🎨 Frontend (Vue.js 3 + TailwindCSS)  
-- Vue Router setup for navigation  
-- **Login Page** – error handling + JWT storage in `localStorage`  
-- **Register Page** – ready with form validation  
-- Axios integrated for API communication  
-- TailwindCSS fully configured (light mode by default)  
-- **Service Filters** with `vue-slider-component` for price range (min/max slider)  
+| Component | Assumed Technology | Purpose |
+| :--- | :--- | :--- |
+| **Main Framework** | **React / Vue / Angular** | Building the modular and reactive User Interface (UI). |
+| **State Management** | **Context API / Redux / Zustand** | Centralized handling of application state (e.g., authenticated user, global data). |
+| **API Calls** | **Axios / Fetch** | Handling asynchronous requests to the Backend REST API. |
+| **Real-Time** | **Socket.IO-client** | Establishing and managing the persistent connection for chat. |
+| **Styling** | **Tailwind CSS / Styled Components** | Responsible for application aesthetics and responsive design. |
 
 ---
 
-## 🎯 Next Steps  
-- Profile page (view/update user info)  
-- Create, update & browse services  
-- Role-based features (providers vs. seekers)  
-- Improved UI (Tailwind components, animations, responsiveness)  
-- Messaging system between users  
-- Deployment:  
-  - Frontend → Netlify  
-  - Backend → Render / Railway / Heroku  
+## 🚀 Getting Started
 
----
+Follow these steps to set up and run the ServiGo Frontend application locally.
 
-## 🛠️ Tech Stack  
+### 1. Prerequisites
 
-**Frontend**  
-- Vue.js 3 (Composition API)  
-- Vue Router  
-- Axios  
-- TailwindCSS  
-- Vue-Slider-Component  
+* [Node.js](https://nodejs.org/en)
+* The **ServiGo Backend API** must be running (typically on `http://localhost:5000`).
 
-**Backend**  
-- Node.js + Express.js  
-- MongoDB (Mongoose)  
-- JWT Authentication  
-- Bcrypt password hashing  
-- Dotenv  
+### 2. Installation
 
----
+1.  Clone the Frontend repository:
+    ```bash
+    git clone [YOUR_FRONTEND_REPO_URL]
+    cd servigo-frontend
+    ```
+2.  Install all required dependencies:
+    ```bash
+    npm install
+    ```
 
-## 📂 Project Structure  
+### 3. Environment Configuration
 
+Create a local environment file (e.g., `.env` or `.env.local` depending on your framework) and define the backend connection points:
 
-usluge-mostar/
-│
-├── backend/
-│ ├── models/ # Database models (User, Service, etc.)
-│ ├── routes/ # API routes (auth, services...)
-│ ├── server.js # Entry point
-│ └── .env # Mongo URI, JWT secret, Port
-│
-├── frontend/
-│ ├── src/
-│ │ ├── components/ # Vue components
-│ │ ├── router/ # Vue Router setup
-│ │ └── App.vue
-│ └── tailwind.config.js
-│
-└── README.md
+| Variable | Example Value | Description |
+| :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | `"http://localhost:5000/api"` | Base URL for all standard REST API calls (login, services, reviews). |
+| `VITE_SOCKET_URL` | `"http://localhost:5000"` | URL for the Socket.IO WebSocket connection. |
 
+### 4. Running the Application
 
----
+Start the application using the designated development script:
 
-## ⚡ How to Run  
-
-### Frontend 
-
-cd frontend
-npm install
+```bash
 npm run dev
-
-## 💡 Motivation
-
-## This project shows my ability to:
-✔️ Work across frontend & backend
-✔️ Apply modern web technologies
-✔️ Write clean, structured code
-✔️ Continuously learn & improve
-
-I want employers to see not only working code but also professional presentation.
-
-## 📬 Contact
-
-🌐 Portfolio: frontendeveloperjanja.netlify.app
-
-🐙 GitHub: github.com/janja97
-
-💼 LinkedIn: linkedin.com/in/janja-badrov-078b92238
-
-📧 Email: janjasentic@gmail.com# Usluge-mostar-Frontnend
+```
